@@ -8,9 +8,6 @@ use Unwinded\Core\Database;
 use Unwinded\Core\Response;
 use Unwinded\Core\View;
 
-/**
- * Individual ticket view / QR scan — full implementation is Phase 8.
- */
 class TicketController
 {
     public function __construct(
@@ -21,12 +18,12 @@ class TicketController
     public function show(string $uid): Response
     {
         $ticket = $this->db->fetchOne(
-            "SELECT t.*, ett.name AS ticket_type_name, pe.title AS event_title,
-                    pe.event_date, pe.start_time, pe.venue_name
-             FROM tickets t
-             JOIN event_ticket_types ett ON ett.id = t.ticket_type_id
-             JOIN public_events pe ON pe.id = ett.event_id
-             WHERE t.uid = ?",
+            "SELECT t.*, tt.name AS ticket_type_name, e.title AS event_title,
+                    e.event_date, e.start_time, e.venue_name, e.venue_city, e.slug AS event_slug
+               FROM tickets t
+               LEFT JOIN event_ticket_types tt ON tt.id = t.ticket_type_id
+               LEFT JOIN public_events e ON e.id = t.event_id
+             WHERE t.ticket_uid=?",
             [$uid]
         );
 
@@ -38,7 +35,7 @@ class TicketController
 
         return Response::make()->html(
             $this->view->renderWithLayout('public', 'public/tickets/show', [
-                'pageTitle'  => 'Ticket — ' . $ticket['event_title'],
+                'pageTitle'  => 'Ticket — ' . ($ticket['event_title'] ?? 'Event'),
                 'metaRobots' => 'noindex,nofollow',
                 'ticket'     => $ticket,
                 'bodyClass'  => 'page page--ticket',

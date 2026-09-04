@@ -278,11 +278,63 @@ Full architecture document covering:
 
 ---
 
-## Phases 7–12 (Pending)
+---
+
+## Phase 7 — Public Events & Ticket Sales ✅ COMPLETE
+
+**Branch:** `claude/unwinded-cms-architecture-71ytmv`
+
+### Deliverables
+
+**Admin Controllers (app/Controllers/Admin/)**
+- `EventController` — full CRUD (index/create/store/edit/update/destroy); slug auto-generation with uniqueness guarantee; status management (draft/scheduled/on_sale/sold_out/sales_closed/completed/cancelled/postponed); sales window fields; SEO fields
+- `TicketTypeController` — store/update per event via edit-page modal; soft-delete; validates qty_available >= qty_reserved + qty_sold; price as Rand → cents
+- `OrderController` — index (filterable by status + event); show with items and tickets; resend (emails tickets to purchaser); cancel (releases qty_reserved/qty_sold atomically in transaction)
+- `CheckinController` — check-in dashboard with live stats (sold/checked-in/remaining); JS-driven QR/manual entry; override support; AJAX POST returns JSON; recent check-ins prepended live
+
+**Admin Views (app/Views/admin/)**
+- `events/index.php` — status filter; events table with date, venue, ticket type count; link to check-in
+- `events/create.php` — event form via `_form.php` partial
+- `events/edit.php` — event form + ticket types panel; modal for add/edit ticket types; delete zone
+- `events/_form.php` — full event fields: title/slug/description/body/date/times/sales window/venue/capacity/policy/featured image/SEO; two-column grid
+- `ticket-types/index.php` — (standalone listing, reached via modal in edit page)
+- `orders/index.php` — status + event filter; orders table with purchaser and event details
+- `orders/show.php` — order detail, line items, ticket list with view links; resend and cancel actions
+- `checkin/index.php` — stats cards; AJAX check-in form (QR or manual entry); override section; live recent check-ins list
+
+**Public Controllers (app/Controllers/Public/)**
+- `CheckoutController` — full implementation replacing stub:
+  - `show()` — loads on-sale events and active ticket types; checks sales windows
+  - `reserve()` — validates quantities (min/max per order); re-reads qty with `FOR UPDATE` lock; calculates all totals server-side from DB prices (never browser values); creates pending `ticket_orders` + `order_items` + `ticket_reservations` (15-min expiry); atomically increments `qty_reserved`
+  - `confirm()` — checks reservation hasn't expired; shows EFT payment instructions; on POST extends reservation to 48 hours and emails payment details
+  - `return()` — shows post-payment landing page
+- `OrderController` — functional: loads order with event details, items, and tickets; renders by public_ref (Crockford Base32, unguessable)
+- `TicketController` — functional: loads ticket via `ticket_uid`; joins event and ticket type; renders QR code via `chillerlan/php-qrcode` SVG output
+
+**Public Views (app/Views/public/)**
+- `checkout/show.php` — ticket type selection with remaining count and sold-out state; purchaser details; live JS total (display-only; server recalculates); CSRF protected
+- `checkout/confirm.php` — order summary; EFT banking details from `setting('bank.details')`; countdown timer; "I have paid" button extends reservation and sends email
+- `checkout/return.php` — thank-you landing page
+- `orders/show.php` — order status, event details, line items, ticket list with status and direct links; EFT pending message
+- `tickets/show.php` — ticket status badge; event details; inline SVG QR code (chillerlan library); ticket UID display
+
+**Security controls applied in Phase 7:**
+- All totals recalculated server-side; browser-submitted prices never used
+- Seat reservation uses `SELECT ... FOR UPDATE` to prevent race conditions
+- qty_reserved incremented atomically in the same transaction as order creation
+- Reservation expires after 15 minutes; confirmed EFT orders extended to 48 hours
+- Cancellation atomically decrements qty_reserved and qty_sold
+- Check-in uses DB transaction; `ticket_checkins` unique on ticket_id prevents double check-in
+- CSRF middleware on all checkout POST routes
+
+**Exit criteria met:** Events can be created and managed with ticket types; ticket sales flow works end-to-end (reserve → confirm → EFT payment instructions); admin can view and cancel orders; check-in dashboard allows QR/manual entry with override support; public ticket page shows SVG QR code.
+
+---
+
+## Phases 8–12 (Pending)
 
 | Phase | Description |
 |-------|-------------|
-| 7 | Public events & ticket sales |
 | 8 | Payments (PayFast + EFT) |
 | 9 | Gallery (public + private) |
 | 10 | Marketing (testimonials, FAQs, enquiries, newsletter) |

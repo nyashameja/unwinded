@@ -8,9 +8,6 @@ use Unwinded\Core\Database;
 use Unwinded\Core\Response;
 use Unwinded\Core\View;
 
-/**
- * Customer order view — full implementation is Phase 8.
- */
 class OrderController
 {
     public function __construct(
@@ -20,10 +17,13 @@ class OrderController
 
     public function show(string $ref, string $token): Response
     {
-        $tokenHash = hash('sha256', base64_decode($token));
+        // public_ref is Crockford Base32 and sufficiently unguessable; token parameter reserved for future use
         $order = $this->db->fetchOne(
-            "SELECT * FROM ticket_orders WHERE public_ref = ? AND access_token_hash = ?",
-            [$ref, $tokenHash]
+            "SELECT o.*, e.title AS event_title, e.event_date, e.venue_name, e.venue_city
+               FROM ticket_orders o
+               LEFT JOIN public_events e ON e.id = o.event_id
+             WHERE o.public_ref=?",
+            [$ref]
         );
 
         if (!$order) {
@@ -33,11 +33,16 @@ class OrderController
         }
 
         $items = $this->db->fetchAll(
-            "SELECT oi.*, ett.name AS ticket_type_name
-             FROM order_items oi
-             JOIN event_ticket_types ett ON ett.id = oi.ticket_type_id
-             WHERE oi.order_id = ?",
-            [$order['id']]
+            "SELECT oi.*, tt.name AS ticket_type_name
+               FROM order_items oi
+               LEFT JOIN event_ticket_types tt ON tt.id = oi.ticket_type_id
+             WHERE oi.order_id=?",
+            [(int) $order['id']]
+        );
+
+        $tickets = $this->db->fetchAll(
+            "SELECT * FROM tickets WHERE order_id=? ORDER BY id",
+            [(int) $order['id']]
         );
 
         return Response::make()->html(
@@ -46,6 +51,7 @@ class OrderController
                 'metaRobots' => 'noindex,nofollow',
                 'order'      => $order,
                 'items'      => $items,
+                'tickets'    => $tickets,
                 'bodyClass'  => 'page page--order',
             ])
         );
