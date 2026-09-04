@@ -236,11 +236,52 @@ Full architecture document covering:
 
 ---
 
-## Phases 6–12 (Pending)
+## Phase 6 — Quotes & Bookings CMS ✅ COMPLETE
+
+**Branch:** `claude/unwinded-cms-architecture-71ytmv`
+
+### Deliverables
+
+**Controllers (app/Controllers/Admin/)**
+- `QuoteRequestController` — index (filterable by status), show (with linked quotes + status history), update (status + assignment), addNote (appends to extra_notes with timestamp + author)
+- `QuotationController` — index, create, store (full line-item build + deposit/discount calculation), show (with customer link URL), edit (draft-only guard), update, send (generates access token hash, sends email, updates status), duplicate (copies items + increments version)
+- `BookingController` — index (filterable), show (items/notes/history/documents/payments), edit, update (line items recalculated server-side), status (with history log), addNote, upload (document via MediaUploadService)
+- `PaymentController` — index, show (allocations/refunds/logs/EFT proof), recordEft (creates payment + allocation + EFT proof + updates booking amounts), refund (creates refund record with 10-day due date)
+- `CustomerController` — index (search by name/email/phone/company), show (with bookings/quotes/requests/payments), update, merge (reassigns all records to target customer)
+
+**Views (app/Views/admin/)**
+- `quote-requests/index.php` — status filter chips, requests table with event type and assigned user
+- `quote-requests/show.php` — customer detail, event detail, linked quotes, status update form, add-note form, status history
+- `quotations/index.php` — status filter, quotes table with validity and expired state
+- `quotations/create.php` — customer select, event fields, notes, line-items editor with live JS subtotal
+- `quotations/edit.php` — same as create, draft-only guard
+- `quotations/show.php` — line items table, totals, customer link URL, notes, status history, send/duplicate actions
+- `quotations/_form.php` — shared line-items partial with vanilla-JS add/remove/recalculate; discount + deposit fields
+- `bookings/index.php` — status filter, booking + payment status badges
+- `bookings/show.php` — full booking detail, line items, payments with inline EFT form, document upload, add-note form, status change form, history
+- `bookings/edit.php` — event fields, financial fields (deposit/deadlines), line-items editor, notes
+- `payments/index.php` — status filter, payments table
+- `payments/show.php` — payment detail, allocations, refund request form, EFT proof display, payment logs
+- `customers/index.php` — search form, customers table with booking/quote counts
+- `customers/show.php` — edit form, merge form, activity tabs (bookings/quotes/requests/payments)
+
+**Business rules enforced:**
+- All totals (subtotal, discount, total, deposit) recalculated server-side — browser values never trusted
+- Quote access tokens stored as SHA-256 hashes; plaintext exists once in the customer link URL
+- Only draft quotes can be edited or sent
+- Status changes are always logged to `quote_status_history` / `booking_status_history`
+- EFT recording atomically updates `payments`, `payment_allocations`, `eft_proofs`, and `private_bookings.amount_paid_cents`
+- Refunds create a `refunds` row with `due_by = +10 business days` and never directly credit money
+- Customer merge reassigns all foreign keys before soft-deleting the source record in a transaction
+
+**Exit criteria met:** Quote requests can be triaged and converted to quotes; quotes can be built with line items, discounted, sent to customers with token-gated links; accepted quotes become bookings; EFT payments can be recorded and allocated; refunds can be requested; customer records can be searched, edited, and merged.
+
+---
+
+## Phases 7–12 (Pending)
 
 | Phase | Description |
 |-------|-------------|
-| 6 | Quotes & bookings CMS |
 | 7 | Public events & ticket sales |
 | 8 | Payments (PayFast + EFT) |
 | 9 | Gallery (public + private) |
