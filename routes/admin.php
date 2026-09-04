@@ -142,10 +142,12 @@ $router->group(['prefix' => '/admin', 'middleware' => [AuthMiddleware::class, Cs
     $router->post('/media/{id}/delete',         'Unwinded\Controllers\Admin\MediaController@destroy',   'admin.media.destroy');
 
     // ── Testimonials ───────────────────────────────────────────────────────
-    $router->get('/testimonials',               'Unwinded\Controllers\Admin\TestimonialController@index',  'admin.testimonials');
-    $router->get('/testimonials/create',        'Unwinded\Controllers\Admin\TestimonialController@create', 'admin.testimonials.create');
-    $router->post('/testimonials',              'Unwinded\Controllers\Admin\TestimonialController@store',  'admin.testimonials.store');
-    $router->post('/testimonials/{id}',         'Unwinded\Controllers\Admin\TestimonialController@update', 'admin.testimonials.update');
+    $router->get('/testimonials',               'Unwinded\Controllers\Admin\TestimonialController@index',   'admin.testimonials');
+    $router->get('/testimonials/create',        'Unwinded\Controllers\Admin\TestimonialController@create',  'admin.testimonials.create');
+    $router->post('/testimonials',              'Unwinded\Controllers\Admin\TestimonialController@store',   'admin.testimonials.store');
+    $router->get('/testimonials/{id}/edit',     'Unwinded\Controllers\Admin\TestimonialController@edit',    'admin.testimonials.edit');
+    $router->post('/testimonials/{id}',         'Unwinded\Controllers\Admin\TestimonialController@update',  'admin.testimonials.update');
+    $router->post('/testimonials/{id}/delete',  'Unwinded\Controllers\Admin\TestimonialController@destroy', 'admin.testimonials.destroy');
 
     // ── FAQs ────────────────────────────────────────────────────────────────
     $router->get('/faqs',                       'Unwinded\Controllers\Admin\FaqController@index',  'admin.faqs');

@@ -47,8 +47,9 @@ class NewsletterController
         }
 
         // Generate confirmation token
-        $rawToken  = Token::generate();
-        $tokenHash = Token::hash($rawToken);
+        $tokenPair = Token::generate();  // ['raw' => hex, 'hash' => sha256]
+        $rawToken  = $tokenPair['raw'];
+        $tokenHash = $tokenPair['hash'];
         $expires   = date('Y-m-d H:i:s', strtotime('+48 hours'));
 
         if ($existing) {
@@ -111,8 +112,8 @@ class NewsletterController
         }
 
         // Build unsubscribe token
-        $rawUnsub  = Token::generate();
-        $unsubHash = Token::hash($rawUnsub);
+        $unsubPair = Token::generate();
+        $unsubHash = $unsubPair['hash'];
 
         $this->db->execute(
             "UPDATE newsletter_subscribers
