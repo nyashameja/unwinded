@@ -50,25 +50,35 @@ $router->get('/g/{token}',                 'Unwinded\Controllers\Public\GalleryC
 $router->post('/g/{token}',                'Unwinded\Controllers\Public\GalleryController@privateAuth',  'gallery.private.auth');
 
 // ── Contact and enquiries ─────────────────────────────────────────────────
-$router->get('/contact',                   'Unwinded\Controllers\Public\ContactController@show',         'contact');
-$router->post('/contact',                  'Unwinded\Controllers\Public\ContactController@submit',       'contact.submit');
+$router->get('/contact', 'Unwinded\Controllers\Public\ContactController@show', 'contact');
+$router->group(['middleware' => [CsrfMiddleware::class]], function (Router $router) {
+    $router->post('/contact', 'Unwinded\Controllers\Public\ContactController@submit', 'contact.submit');
+});
 
 // ── Quote request ──────────────────────────────────────────────────────────
 $router->get('/request-a-quote',           'Unwinded\Controllers\Public\QuoteRequestController@show',    'quote-request');
-$router->post('/request-a-quote',          'Unwinded\Controllers\Public\QuoteRequestController@submit',  'quote-request.submit');
 $router->get('/request-a-quote/thank-you', 'Unwinded\Controllers\Public\QuoteRequestController@thankYou','quote-request.thanks');
+$router->group(['middleware' => [CsrfMiddleware::class]], function (Router $router) {
+    $router->post('/request-a-quote', 'Unwinded\Controllers\Public\QuoteRequestController@submit', 'quote-request.submit');
+});
 
 // ── Customer-facing quotation view ─────────────────────────────────────────
-$router->get('/quote/{ref}/{token}',       'Unwinded\Controllers\Public\QuoteViewController@show',       'quote.view');
-$router->post('/quote/{ref}/{token}/accept','Unwinded\Controllers\Public\QuoteViewController@accept',    'quote.accept');
-$router->post('/quote/{ref}/{token}/decline','Unwinded\Controllers\Public\QuoteViewController@decline',  'quote.decline');
+$router->get('/quote/{ref}/{token}',        'Unwinded\Controllers\Public\QuoteViewController@show',    'quote.view');
+$router->group(['middleware' => [CsrfMiddleware::class]], function (Router $router) {
+    $router->post('/quote/{ref}/{token}/accept',  'Unwinded\Controllers\Public\QuoteViewController@accept',  'quote.accept');
+    $router->post('/quote/{ref}/{token}/decline', 'Unwinded\Controllers\Public\QuoteViewController@decline', 'quote.decline');
+});
 
 // ── Payment ────────────────────────────────────────────────────────────────
-$router->get('/pay/{ref}/{token}',         'Unwinded\Controllers\Public\PaymentController@show',         'pay');
-$router->post('/pay/{ref}/{token}',        'Unwinded\Controllers\Public\PaymentController@initiate',     'pay.initiate');
+$router->get('/pay/{ref}/{token}',  'Unwinded\Controllers\Public\PaymentController@show',     'pay');
+$router->group(['middleware' => [CsrfMiddleware::class]], function (Router $router) {
+    $router->post('/pay/{ref}/{token}', 'Unwinded\Controllers\Public\PaymentController@initiate', 'pay.initiate');
+});
 
 // ── Newsletter ─────────────────────────────────────────────────────────────
-$router->post('/newsletter/subscribe',     'Unwinded\Controllers\Public\NewsletterController@subscribe', 'newsletter.subscribe');
+$router->group(['middleware' => [CsrfMiddleware::class]], function (Router $router) {
+    $router->post('/newsletter/subscribe', 'Unwinded\Controllers\Public\NewsletterController@subscribe', 'newsletter.subscribe');
+});
 $router->get('/newsletter/confirm/{token}','Unwinded\Controllers\Public\NewsletterController@confirm',   'newsletter.confirm');
 $router->get('/newsletter/unsubscribe/{token}', 'Unwinded\Controllers\Public\NewsletterController@unsubscribe', 'newsletter.unsubscribe');
 

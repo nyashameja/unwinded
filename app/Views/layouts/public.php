@@ -61,7 +61,7 @@
           <li><a href="<?= url('/gallery') ?>">Gallery</a></li>
           <li><a href="<?= url('/about') ?>">About</a></li>
           <li><a href="<?= url('/contact') ?>">Contact</a></li>
-          <li class="nav-cta"><a href="<?= url('/quote') ?>" class="btn btn-primary">Book an Event</a></li>
+          <li class="nav-cta"><a href="<?= url('/request-a-quote') ?>" class="btn btn-primary">Book an Event</a></li>
         </ul>
       </nav>
     </div>

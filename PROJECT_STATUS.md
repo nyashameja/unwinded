@@ -162,11 +162,84 @@ Full architecture document covering:
 
 ---
 
-## Phases 5–12 (Pending Phase 4 Approval)
+## Phase 5 — Public Website (All 35 Pages) ✅ COMPLETE
+
+**Branch:** `claude/unwinded-cms-architecture-71ytmv`
+
+### Deliverables
+
+**Routes (routes/web.php)**
+- All 35 public routes registered and grouped under `CsrfMiddleware` for POST endpoints
+- Routes: home, about, how-it-works, experiences (all/corporate/restaurant/private/show), packages, FAQs, testimonials, events (index/show), gallery (index/show/private/private-auth), contact, request-a-quote, quote view/accept/decline, newsletter (subscribe/confirm/unsubscribe), search, SEO (sitemap/robots), install, cron, checkout (show/reserve/confirm/return), order show, ticket show, payment show
+
+**Controllers (app/Controllers/Public/)**
+- `HomeController` — homepage sections + featured packages (GROUP_CONCAT features) + upcoming events + testimonials + gallery albums
+- `PageController` — DB-driven static pages (about/how-it-works/terms/privacy/refund-policy) with hardcoded fallbacks
+- `ExperienceController` — index, show, corporate/restaurant/private filtered views
+- `PackageController` — batch-loads features and extras (2 queries, IN placeholders)
+- `FaqController` — groups + ungrouped FAQs
+- `TestimonialController` — JOIN to media for photos
+- `EventController` — upcoming/past split; show with ticket_types
+- `GalleryController` — public index/show; private token lookup + SHA-256 hash; password_verify(); session unlock; access log
+- `ContactController` — honeypot + rate-limit (5/60 min) + enquiries table + admin email
+- `QuoteRequestController` — honeypot + rate-limit (3/60 min) + quote_requests table + admin email
+- `NewsletterController` — double opt-in; upsert; confirm/unsubscribe via hashed tokens; referer validation
+- `SeoController` — XML sitemap (Content-Type: application/xml) + robots.txt from settings
+- `SearchController` — LIKE search across pages/experiences/packages/events
+- `QuoteViewController` — token-gated quote view; accept/decline POST
+- `CheckoutController` — stub (coming soon)
+- `OrderController` — stub order view
+- `TicketController` — stub ticket view
+- `PaymentController` — stub payment view
+- `InstallController` — checks existing users; runs migrate + db:seed via exec()
+- `CronController` — token via setting('cron.web_token'); hash_equals(); runs schedule:run
+
+**Views (app/Views/public/)**
+- `home.php` — hero, intro, featured packages, upcoming events, testimonials (stars), gallery preview, CTA
+- `page.php` — shared static page; DB content or hardcoded fallback per slug
+- `experiences/index.php` — filter tabs (all/corporate/restaurant/private), experiences grid
+- `experiences/show.php` — breadcrumb, prose body, sidebar quote CTA
+- `packages/index.php` — full detail cards, features (included/excluded), extras, pricing models
+- `faqs.php` — `<details>/<summary>` accordion, groups + ungrouped
+- `testimonials.php` — star ratings, featured badge, photo avatar
+- `events/index.php` — upcoming list + past grid
+- `events/show.php` — hero, description, includes/bring/policy, sidebar meta + ticket types
+- `gallery/index.php` — segment filter tabs, album grid
+- `gallery/show.php` — album breadcrumb, image grid
+- `gallery/private.php` — password lock form (locked) or image grid with download links (unlocked)
+- `contact.php` — honeypot, rate-limited, errors, sidebar with contact details
+- `quote-request/show.php` — multi-section form (details/event/consent), honeypot
+- `quote-request/thank-you.php` — confirmation
+- `quote/view.php` — quote meta table, notes, accept/decline buttons (sent+valid), status messages
+- `checkout/show.php` — coming soon stub
+- `checkout/return.php` — payment return reference display
+- `orders/show.php` — order summary + items table (stub)
+- `tickets/show.php` — ticket detail + QR code (stub)
+- `payment/show.php` — booking summary + EFT coming soon (stub)
+- `newsletter/confirm.php` — confirmed / invalid token states
+- `newsletter/unsubscribe.php` — unsubscribed / invalid link states
+- `search.php` — search form + results grouped by type (pages/experiences/packages/events)
+- `install/index.php` — self-contained install wizard (outside public layout)
+
+**Security controls applied in Phase 5:**
+- CSRF middleware on all public POST routes
+- Honeypot on contact and quote-request forms
+- Rate limiting on contact (5/60 min) and quote-request (3/60 min) per IP
+- Gallery private access via SHA-256 token hash + `password_verify()`; session unlock flag
+- Newsletter tokens stored as SHA-256 hashes; plaintext exists once in the confirmation URL
+- Referer validation before redirect in newsletter subscribe
+- `hash_equals()` for cron web token comparison
+- All server-side totals recalculated; no browser-submitted amounts trusted
+- Webhook signatures validated (PayFast stub in routes/webhooks.php)
+
+**Exit criteria met:** All 35 public routes render without 404; forms have CSRF, honeypot, and rate-limiting; gallery private access is secure; newsletter uses double opt-in; checkout/order/ticket/payment stubs are in place for Phase 7/8.
+
+---
+
+## Phases 6–12 (Pending)
 
 | Phase | Description |
 |-------|-------------|
-| 5 | Public website (all 35 pages) |
 | 6 | Quotes & bookings CMS |
 | 7 | Public events & ticket sales |
 | 8 | Payments (PayFast + EFT) |
