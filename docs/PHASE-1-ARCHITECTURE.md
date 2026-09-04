@@ -927,3 +927,65 @@ and PHP extension availability can change decisions in Phase 5 and Phase 2 respe
 
 Once approved, Phase 2 delivers the project skeleton, configuration, routing, error handling, the complete
 migration set, seed data, base layouts and the documentation files.
+
+---
+
+## 17. Resolved business rules — OQ-01 to OQ-06
+
+*Resolved 2026-09-04.*
+
+### OQ-01 — VAT: NOT registered
+Unwinded is **not VAT registered**. No VAT is applied to quotes, bookings or orders.
+The schema includes a `tax_rate` column on line-item tables and a `vat_mode` column on financial documents,
+both defaulting to `none`/`0.00`. If Unwinded registers for VAT in future, an administrator can switch the
+global VAT mode in Website Settings without a migration.
+
+### OQ-02 — Deposit: 50%, due immediately / 5 business days before the event
+- **Amount:** 50% of the accepted quotation total.
+- **Deadline logic:** The system computes and stores **two deposit deadlines**:
+  - `deposit_soft_deadline` = quote-acceptance date + 48 hours (prompt payment expected)
+  - `deposit_hard_deadline` = event date − 5 business days (absolute latest)
+  - The booking's displayed deadline is the **earlier** of the two.
+- **Reminder schedule:** reminder email at soft deadline, escalation at hard deadline.
+- **No booking is Confirmed until the deposit is received.** A booking stays `Awaiting Deposit`
+  and can be cancelled by the administrator if neither deadline is met.
+
+### OQ-03 — Quotation validity: 14 days, flag for follow-up on expiry
+- Quotations are valid for **14 calendar days** from the date of issue.
+- A reminder email is sent at **day 10**.
+- On day 14, if no response: status → `Expired`; a dashboard flag and a notification email
+  alert the assigned team member to follow up. The quotation is **not silently closed** —
+  a human must decide whether to reissue or archive it.
+- Reissuing creates a new quotation version (the expired one is preserved in history).
+
+### OQ-04 — Refunds: processed within 10 business days of a refund request
+- An administrator reviews and approves or declines a refund request.
+- Once approved, the refund is processed and must be completed within **10 business days**.
+- The system tracks: request date, approval date, processing deadline, completion date.
+- **Cancellation fee tiers** (e.g. sliding scale by notice period, non-refundable deposit) are
+  configurable in Website Settings by an Administrator — they are not hard-coded.
+  *Note: CPA s17 applies; the default configuration should be reviewed with your attorney
+  before going live.*
+- A "Refund Due By" date is displayed on every approved refund in the payments module.
+
+### OQ-05 — Payment provider: PayFast
+PayFast is the selected provider.
+Integration notes that shape the Phase 9 build:
+- **Webhook mechanism:** ITN (Instant Transaction Notification) — a server-to-server POST.
+- **Signature:** MD5 of alphabetically sorted key=value pairs + seller passphrase; verified
+  server-side before any state change. The passphrase lives in `.env` only.
+- **Return/cancel URLs:** used only to route the customer; they never trigger payment confirmation.
+- **Sandbox:** full sandbox environment available for Phase 9 testing.
+- **Payment methods supported:** credit/debit card, Instant EFT, SnapScan, Mobicred, etc.
+- The payment-gateway abstraction layer will be built with PayFast as the first and only driver
+  in v1; the interface is designed so that a second provider can be added as a new driver class
+  without touching booking or ticketing code.
+
+### OQ-06 — Group/couple tickets: separate QR ticket per admission
+A ticket type with `admissions = 2` (e.g. "Couple Ticket") generates **2 individual ticket records**,
+each with its own unique `ticket_uid` and QR code, at the time the order is confirmed.
+- Each person presents their own ticket at the door.
+- The order confirmation email lists all tickets and includes all QR codes.
+- Check-in is per individual ticket; the system shows both tickets under the order for context.
+- This simplifies the check-in flow (no partial-use state on a single ticket) at the cost of
+  slightly larger order confirmation emails. Accepted trade-off.

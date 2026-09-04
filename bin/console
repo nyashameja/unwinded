@@ -1,0 +1,326 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+define('APP_ROOT', dirname(__DIR__));
+define('RUNNING_IN_CONSOLE', true);
+
+require APP_ROOT . '/bootstrap/paths.php';
+require APP_ROOT . '/vendor/autoload.php';
+
+use Dotenv\Dotenv;
+use Unwinded\Core\Container;
+use Unwinded\Core\Config;
+use Unwinded\Core\Database;
+use Unwinded\Core\Migrator;
+use Unwinded\Core\Logger;
+
+// Load environment
+$dotenv = Dotenv::createImmutable(APP_ROOT);
+$dotenv->safeLoad();
+
+// Register services
+$container = Container::getInstance();
+
+$container->singleton(Logger::class, fn() => new Logger(
+    path('logs'),
+    $_ENV['LOG_LEVEL'] ?? 'debug'
+));
+
+$container->singleton(Database::class, function () {
+    $db = new Database(
+        host:     $_ENV['DB_HOST']     ?? '127.0.0.1',
+        port:     (int)($_ENV['DB_PORT'] ?? 3306),
+        dbname:   $_ENV['DB_NAME']     ?? '',
+        username: $_ENV['DB_USER']     ?? '',
+        password: $_ENV['DB_PASS']     ?? '',
+        charset:  $_ENV['DB_CHARSET']  ?? 'utf8mb4',
+    );
+    return $db;
+});
+
+$container->singleton(Migrator::class, fn() => new Migrator(
+    $container->make(Database::class),
+    path('database') . '/migrations'
+));
+
+// ──────────────────────────────────────────────────
+// Command dispatch
+// ──────────────────────────────────────────────────
+
+$argv   = $_SERVER['argv'] ?? [];
+$script = array_shift($argv);
+$cmd    = array_shift($argv) ?? 'help';
+
+function out(string $msg, string $level = 'info'): void
+{
+    $prefix = match ($level) {
+        'ok'    => "\033[32m✔\033[0m",
+        'error' => "\033[31m✖\033[0m",
+        'warn'  => "\033[33m⚠\033[0m",
+        default => "\033[34m→\033[0m",
+    };
+    echo $prefix . ' ' . $msg . PHP_EOL;
+}
+
+function abort(string $msg, int $code = 1): never
+{
+    out($msg, 'error');
+    exit($code);
+}
+
+match ($cmd) {
+    'migrate'          => cmd_migrate($container, $argv),
+    'migrate:rollback' => cmd_migrate_rollback($container, $argv),
+    'migrate:fresh'    => cmd_migrate_fresh($container, $argv),
+    'db:seed'          => cmd_db_seed($container, $argv),
+    'key:generate'     => cmd_key_generate(),
+    'schedule:run'     => cmd_schedule_run($container),
+    'user:create'      => cmd_user_create($container, $argv),
+    'help', '--help', '-h' => cmd_help(),
+    default => abort("Unknown command: {$cmd}. Run `bin/console help` for a list."),
+};
+
+// ──────────────────────────────────────────────────
+// Commands
+// ──────────────────────────────────────────────────
+
+function cmd_migrate(Container $c, array $args): void
+{
+    /** @var Migrator $migrator */
+    $migrator = $c->make(Migrator::class);
+    $ran      = $migrator->run();
+
+    if (empty($ran)) {
+        out('Nothing to migrate.', 'ok');
+        return;
+    }
+
+    foreach ($ran as $file) {
+        out("Migrated: {$file}", 'ok');
+    }
+}
+
+function cmd_migrate_rollback(Container $c, array $args): void
+{
+    $steps    = isset($args[0]) && ctype_digit($args[0]) ? (int)$args[0] : 1;
+    /** @var Migrator $migrator */
+    $migrator = $c->make(Migrator::class);
+    $rolled   = $migrator->rollback($steps);
+
+    if (empty($rolled)) {
+        out('Nothing to roll back.', 'warn');
+        return;
+    }
+
+    foreach ($rolled as $file) {
+        out("Rolled back: {$file}", 'ok');
+    }
+}
+
+function cmd_migrate_fresh(Container $c, array $args): void
+{
+    if (!in_array('--force', $args, true) && ($_ENV['APP_ENV'] ?? '') !== 'local') {
+        abort('migrate:fresh is only allowed in APP_ENV=local, or pass --force explicitly.');
+    }
+
+    echo "\033[31mWARNING: This will drop and recreate the entire database schema.\033[0m" . PHP_EOL;
+    echo "Type 'yes' to confirm: ";
+    $confirm = trim(fgets(STDIN));
+    if ($confirm !== 'yes') {
+        abort('Aborted.');
+    }
+
+    /** @var Migrator $migrator */
+    $migrator = $c->make(Migrator::class);
+    $migrator->fresh();
+    out('Database reset complete.', 'ok');
+
+    cmd_migrate($c, []);
+}
+
+function cmd_db_seed(Container $c, array $args): void
+{
+    $seedPath = path('database') . '/seeds';
+    $seeders  = [
+        'RolesAndPermissionsSeeder',
+        'AdminUserSeeder',
+        'SettingsSeeder',
+        'HomepageSectionsSeeder',
+        'EmailTemplatesSeeder',
+        'ScheduledTasksSeeder',
+    ];
+
+    // Allow running a specific seeder
+    if (!empty($args[0])) {
+        $seeders = [$args[0]];
+    }
+
+    /** @var Database $db */
+    $db = $c->make(Database::class);
+
+    foreach ($seeders as $seederClass) {
+        $file = $seedPath . '/' . $seederClass . '.php';
+        if (!file_exists($file)) {
+            out("Seeder not found: {$seederClass}", 'warn');
+            continue;
+        }
+        require_once $file;
+        $seeder = new $seederClass();
+        out("Running: {$seederClass}");
+        $seeder->run($db);
+        out("Done: {$seederClass}", 'ok');
+    }
+}
+
+function cmd_key_generate(): void
+{
+    $key = 'base64:' . base64_encode(random_bytes(32));
+    out("Generated key: {$key}");
+    out('Set APP_KEY in your .env file to this value.', 'warn');
+}
+
+function cmd_schedule_run(Container $c): void
+{
+    /** @var Database $db */
+    $db   = $c->make(Database::class);
+    $now  = gmdate('Y-m-d H:i:s');
+
+    $tasks = $db->fetchAll(
+        "SELECT * FROM scheduled_tasks
+         WHERE is_enabled = 1
+           AND (next_run_at IS NULL OR next_run_at <= ?)
+           AND (last_run_status IS NULL OR last_run_status != 'running')",
+        [$now]
+    );
+
+    if (empty($tasks)) {
+        out('No tasks due.', 'ok');
+        return;
+    }
+
+    foreach ($tasks as $task) {
+        $handlerClass = $task['handler'];
+
+        if (!class_exists($handlerClass)) {
+            out("Handler not found: {$handlerClass}", 'warn');
+            continue;
+        }
+
+        out("Running: {$task['name']}");
+
+        $db->update('scheduled_tasks', ['last_run_status' => 'running'], 'id = ?', [$task['id']]);
+
+        try {
+            $handler = new $handlerClass($c);
+            $output  = $handler->run();
+
+            $db->update('scheduled_tasks', [
+                'last_run_at'     => $now,
+                'last_run_status' => 'success',
+                'last_run_output' => $output,
+                'run_count'       => (int)$task['run_count'] + 1,
+                'next_run_at'     => compute_next_run($task['schedule']),
+            ], 'id = ?', [$task['id']]);
+
+            out("Done: {$task['name']}", 'ok');
+        } catch (Throwable $e) {
+            $db->update('scheduled_tasks', [
+                'last_run_at'     => $now,
+                'last_run_status' => 'failure',
+                'last_run_output' => $e->getMessage(),
+                'failure_count'   => (int)$task['failure_count'] + 1,
+                'next_run_at'     => compute_next_run($task['schedule']),
+            ], 'id = ?', [$task['id']]);
+
+            out("Failed: {$task['name']} — {$e->getMessage()}", 'error');
+        }
+    }
+}
+
+function compute_next_run(string $schedule): string
+{
+    return match ($schedule) {
+        'every_5_minutes' => gmdate('Y-m-d H:i:s', strtotime('+5 minutes')),
+        'every_15_minutes' => gmdate('Y-m-d H:i:s', strtotime('+15 minutes')),
+        'hourly'           => gmdate('Y-m-d H:i:s', strtotime('+1 hour')),
+        'daily'            => gmdate('Y-m-d H:i:s', strtotime('+1 day')),
+        'weekly'           => gmdate('Y-m-d H:i:s', strtotime('+1 week')),
+        default            => gmdate('Y-m-d H:i:s', strtotime('+1 hour')),
+    };
+}
+
+function cmd_user_create(Container $c, array $args): void
+{
+    echo "Name: ";
+    $name = trim(fgets(STDIN));
+    echo "Email: ";
+    $email = trim(fgets(STDIN));
+    echo "Password: ";
+    $password = trim(fgets(STDIN));
+    echo "Super admin? (yes/no): ";
+    $isSuperAdmin = strtolower(trim(fgets(STDIN))) === 'yes' ? 1 : 0;
+
+    if (empty($name) || empty($email) || empty($password)) {
+        abort('Name, email, and password are required.');
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        abort('Invalid email address.');
+    }
+
+    if (strlen($password) < 8) {
+        abort('Password must be at least 8 characters.');
+    }
+
+    /** @var Database $db */
+    $db = $c->make(Database::class);
+
+    $existing = $db->fetchOne("SELECT id FROM users WHERE email = ?", [$email]);
+    if ($existing) {
+        abort("A user with that email already exists.");
+    }
+
+    $userId = $db->insert('users', [
+        'name'           => $name,
+        'email'          => $email,
+        'password_hash'  => password_hash($password, PASSWORD_ARGON2ID),
+        'is_super_admin' => $isSuperAdmin,
+        'is_active'      => 1,
+    ]);
+
+    out("User created with ID: {$userId}", 'ok');
+
+    if ($isSuperAdmin) {
+        $role = $db->fetchOne("SELECT id FROM roles WHERE name = 'super_admin'");
+        if ($role) {
+            $db->execute(
+                "INSERT IGNORE INTO user_roles (user_id, role_id) VALUES (?, ?)",
+                [$userId, $role['id']]
+            );
+        }
+    }
+}
+
+function cmd_help(): void
+{
+    echo <<<HELP
+
+  \033[1mUnwinded Console\033[0m
+
+  Usage: bin/console <command> [arguments]
+
+  \033[33mCommands:\033[0m
+
+    \033[32mmigrate\033[0m               Run pending database migrations
+    \033[32mmigrate:rollback\033[0m [n]  Roll back the last N migrations (default: 1)
+    \033[32mmigrate:fresh\033[0m         Drop all tables and re-run all migrations (local only)
+    \033[32mdb:seed\033[0m [Seeder]      Run database seeders (or a specific one)
+    \033[32mkey:generate\033[0m          Generate a new APP_KEY value
+    \033[32mschedule:run\033[0m          Run due scheduled tasks (call from cron)
+    \033[32muser:create\033[0m           Interactively create an admin user
+    \033[32mhelp\033[0m                  Show this help
+
+HELP;
+}
