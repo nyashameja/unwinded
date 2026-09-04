@@ -21,6 +21,7 @@ use Unwinded\Core\Auth;
 use Unwinded\Core\View;
 use Unwinded\Core\RateLimiter;
 use Unwinded\Core\EventBus;
+use Unwinded\Services\ActivityLogger;
 
 // ── 1. Autoloader ──────────────────────────────────────────────────────────
 defined('APP_ROOT') || define('APP_ROOT', dirname(__DIR__));
@@ -107,6 +108,7 @@ date_default_timezone_set($config->get('app.timezone', 'Africa/Johannesburg'));
 // ── 8. Database ────────────────────────────────────────────────────────────
 $db = new Database($config->get('database', []));
 $container->instance('db', $db);
+$container->instance(Database::class, $db);
 
 // ── 9. Session (web only) ──────────────────────────────────────────────────
 if (PHP_SAPI !== 'cli') {
@@ -117,9 +119,11 @@ if (PHP_SAPI !== 'cli') {
     );
     $session->start();
     $container->instance('session', $session);
+    $container->instance(Session::class, $session);
 
     $csrf = new Csrf($session);
     $container->instance('csrf', $csrf);
+    $container->instance(Csrf::class, $csrf);
 }
 
 // ── 10. Auth ───────────────────────────────────────────────────────────────
@@ -129,20 +133,30 @@ $auth = new Auth(
     logger:  $logger
 );
 $container->instance('auth', $auth);
+$container->instance(Auth::class, $auth);
 
 // ── 11. View ───────────────────────────────────────────────────────────────
 $view = new View($paths['views'], $config->get('app', []));
 $container->instance('view', $view);
+$container->instance(View::class, $view);
 
 // ── 12. Rate limiter ───────────────────────────────────────────────────────
 $rateLimiter = new RateLimiter($db);
 $container->instance('rateLimiter', $rateLimiter);
+$container->instance(RateLimiter::class, $rateLimiter);
 
 // ── 13. Event bus ──────────────────────────────────────────────────────────
 $eventBus = new EventBus();
 $container->instance('events', $eventBus);
 
-// ── 14. Router ─────────────────────────────────────────────────────────────
+// ── 14. Services ───────────────────────────────────────────────────────────
+if (PHP_SAPI !== 'cli') {
+    $activityLogger = new ActivityLogger($db, $auth);
+    $container->instance('activityLogger', $activityLogger);
+    $container->instance(ActivityLogger::class, $activityLogger);
+}
+
+// ── 15. Router ─────────────────────────────────────────────────────────────
 $router = new Router($container);
 $container->instance('router', $router);
 

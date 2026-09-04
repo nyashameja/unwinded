@@ -46,4 +46,47 @@ class Container
         }
         throw new \RuntimeException("No binding registered for [{$abstract}]");
     }
+
+    /**
+     * Instantiate a class by auto-wiring its constructor from registered instances.
+     * Resolves parameters by type-hint; looks up short class name in instances first.
+     */
+    public function build(string $class): object
+    {
+        $ref = new \ReflectionClass($class);
+        $constructor = $ref->getConstructor();
+        if ($constructor === null) {
+            return $ref->newInstance();
+        }
+
+        $args = [];
+        foreach ($constructor->getParameters() as $param) {
+            $type = $param->getType();
+            if ($type instanceof \ReflectionNamedType && !$type->isBuiltin()) {
+                $typeName = $type->getName();
+                // Try full class name first, then short name lowercased
+                $short = lcfirst(basename(str_replace('\\', '/', $typeName)));
+                if (isset($this->instances[$typeName])) {
+                    $args[] = $this->instances[$typeName];
+                } elseif (isset($this->instances[$short])) {
+                    $args[] = $this->instances[$short];
+                } elseif (isset($this->bindings[$typeName])) {
+                    $args[] = ($this->bindings[$typeName])($this);
+                } elseif ($param->isOptional()) {
+                    $args[] = $param->getDefaultValue();
+                } else {
+                    throw new \RuntimeException(
+                        "Cannot auto-wire [{$typeName}] for [{$class}::\${$param->getName()}]"
+                    );
+                }
+            } elseif ($param->isOptional()) {
+                $args[] = $param->getDefaultValue();
+            } else {
+                throw new \RuntimeException(
+                    "Cannot resolve non-typed parameter [{$param->getName()}] for [{$class}]"
+                );
+            }
+        }
+        return $ref->newInstanceArgs($args);
+    }
 }

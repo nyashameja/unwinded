@@ -72,7 +72,7 @@
         <td><?= e($entry['created_at']) ?></td>
         <td><?= e($entry['user_name'] ?? '—') ?></td>
         <td><?= e($entry['action']) ?></td>
-        <td><?= e($entry['subject_type'] . ' #' . $entry['subject_id']) ?></td>
+        <td><?= e(($entry['entity_type'] ?? '') . ($entry['entity_id'] ? ' #' . $entry['entity_id'] : '')) ?></td>
       </tr>
       <?php endforeach; ?>
     </tbody>

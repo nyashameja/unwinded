@@ -15,7 +15,11 @@ class Migrator
 
     public function __construct(private Database $db, string $basePath)
     {
-        $this->migrationPath = $basePath . '/database/migrations';
+        // Accept either the app root (we append the standard path) or a direct path to
+        // the migrations directory (ends with /migrations).
+        $this->migrationPath = str_ends_with($basePath, '/migrations')
+            ? $basePath
+            : $basePath . '/database/migrations';
     }
 
     public function install(): void
@@ -34,16 +38,16 @@ class Migrator
     public function run(): array
     {
         $this->install();
-        $ran = $this->getRan();
+        $ran     = $this->getRan();
         $pending = $this->getPending($ran);
         if (empty($pending)) return [];
 
-        $batch = $this->getNextBatch();
+        $batch    = $this->getNextBatch();
         $executed = [];
         foreach ($pending as $file) {
-            $migration = require $file;
-            $this->runUp($migration['up']);
-            $name = basename($file, '.php');
+            $loaded = require $file;
+            $name   = basename($file, '.php');
+            $this->runUp($loaded);
             $this->db->insert('migrations', ['migration' => $name, 'batch' => $batch, 'ran_at' => now()]);
             $executed[] = $name;
             echo "  Ran: {$name}\n";
@@ -51,27 +55,30 @@ class Migrator
         return $executed;
     }
 
-    /** Rollback the last batch. */
-    public function rollback(): array
+    /** Rollback the last N batches (default 1). */
+    public function rollback(int $steps = 1): array
     {
         $this->install();
-        $batch = $this->getLastBatch();
-        if ($batch === 0) return [];
-
-        $rows = $this->db->fetchAll(
-            "SELECT migration FROM migrations WHERE batch = ? ORDER BY id DESC",
-            [$batch]
-        );
         $rolled = [];
-        foreach ($rows as $row) {
-            $file = $this->migrationPath . '/' . $row['migration'] . '.php';
-            if (file_exists($file)) {
-                $migration = require $file;
-                $this->runDown($migration['down']);
+
+        for ($i = 0; $i < $steps; $i++) {
+            $batch = $this->getLastBatch();
+            if ($batch === 0) break;
+
+            $rows = $this->db->fetchAll(
+                "SELECT migration FROM migrations WHERE batch = ? ORDER BY id DESC",
+                [$batch]
+            );
+            foreach ($rows as $row) {
+                $file = $this->migrationPath . '/' . $row['migration'] . '.php';
+                if (file_exists($file)) {
+                    $loaded = require $file;
+                    $this->runDown($loaded);
+                }
+                $this->db->execute("DELETE FROM migrations WHERE migration = ?", [$row['migration']]);
+                $rolled[] = $row['migration'];
+                echo "  Rolled back: {$row['migration']}\n";
             }
-            $this->db->execute("DELETE FROM migrations WHERE migration = ?", [$row['migration']]);
-            $rolled[] = $row['migration'];
-            echo "  Rolled back: {$row['migration']}\n";
         }
         return $rolled;
     }
@@ -90,21 +97,46 @@ class Migrator
         $this->run();
     }
 
-    private function runUp(string|callable $sql): void
+    /**
+     * Execute the "up" direction of a migration.
+     * Accepts:
+     *   - array ['up' => string|callable, 'down' => ...]
+     *   - object with up(Database $db): void method
+     */
+    private function runUp(mixed $migration): void
+    {
+        if (is_object($migration) && method_exists($migration, 'up')) {
+            $migration->up($this->db);
+            return;
+        }
+        if (is_array($migration)) {
+            $this->execSql($migration['up']);
+            return;
+        }
+        throw new \RuntimeException('Unknown migration format in ' . get_debug_type($migration));
+    }
+
+    private function runDown(mixed $migration): void
+    {
+        if (is_object($migration) && method_exists($migration, 'down')) {
+            $migration->down($this->db);
+            return;
+        }
+        if (is_array($migration)) {
+            $this->execSql($migration['down']);
+            return;
+        }
+    }
+
+    private function execSql(string|callable $sql): void
     {
         if (is_callable($sql)) {
             $sql($this->db);
             return;
         }
-        // Split on statement delimiter for multi-statement migrations.
         foreach (array_filter(array_map('trim', explode(';', $sql))) as $stmt) {
             $this->db->pdo()->exec($stmt);
         }
-    }
-
-    private function runDown(string|callable $sql): void
-    {
-        $this->runUp($sql);
     }
 
     private function getRan(): array

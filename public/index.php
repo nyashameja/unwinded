@@ -22,6 +22,8 @@ $router->load(APP_ROOT . '/routes/webhooks.php');
 
 // Build the request from superglobals.
 $request = new \Unwinded\Core\Request();
+$container->instance('request', $request);
+$container->instance(\Unwinded\Core\Request::class, $request);
 
 // Apply security headers to every response.
 $headers = new \Unwinded\Middleware\SecurityHeadersMiddleware($container);

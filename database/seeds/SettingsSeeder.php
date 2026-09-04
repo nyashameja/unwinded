@@ -63,7 +63,7 @@ class SettingsSeeder
 
         foreach ($settings as $setting) {
             $db->execute(
-                "INSERT IGNORE INTO settings (`key`, value, type, `group`, label)
+                "INSERT IGNORE INTO settings (`key`, value, type, group_name, label)
                  VALUES (?, ?, ?, ?, ?)",
                 [
                     $setting['key'],

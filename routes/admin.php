@@ -11,9 +11,13 @@ use Unwinded\Middleware\{AuthMiddleware, CsrfMiddleware, GuestMiddleware};
 /** @var Router $router */
 
 // ── Auth (guest-only) ──────────────────────────────────────────────────────
-$router->group(['prefix' => '/admin', 'middleware' => [GuestMiddleware::class]], function (Router $router) {
-    $router->get('/login',  'Unwinded\Controllers\Admin\AuthController@loginForm', 'admin.login');
-    $router->post('/login', 'Unwinded\Controllers\Admin\AuthController@login',     'admin.login.post');
+$router->group(['prefix' => '/admin', 'middleware' => [GuestMiddleware::class, CsrfMiddleware::class]], function (Router $router) {
+    $router->get('/login',                    'Unwinded\Controllers\Admin\AuthController@showLogin',      'admin.login');
+    $router->post('/login',                   'Unwinded\Controllers\Admin\AuthController@login',          'admin.login.post');
+    $router->get('/password/reset',           'Unwinded\Controllers\Admin\PasswordResetController@showForgot',    'admin.password.forgot');
+    $router->post('/password/reset',          'Unwinded\Controllers\Admin\PasswordResetController@sendResetLink', 'admin.password.send');
+    $router->get('/password/reset/{token}',   'Unwinded\Controllers\Admin\PasswordResetController@showReset',     'admin.password.reset');
+    $router->post('/password/reset/{token}',  'Unwinded\Controllers\Admin\PasswordResetController@resetPassword', 'admin.password.reset.post');
 });
 
 $router->group(['prefix' => '/admin', 'middleware' => [AuthMiddleware::class, CsrfMiddleware::class]], function (Router $router) {
@@ -222,7 +226,7 @@ $router->group(['prefix' => '/admin', 'middleware' => [AuthMiddleware::class, Cs
     $router->post('/settings/mail/test',        'Unwinded\Controllers\Admin\SettingsController@testMail','admin.settings.mail-test');
 
     // ── Profile ─────────────────────────────────────────────────────────────
-    $router->get('/profile',                    'Unwinded\Controllers\Admin\ProfileController@edit',   'admin.profile');
-    $router->post('/profile',                   'Unwinded\Controllers\Admin\ProfileController@update', 'admin.profile.update');
-    $router->post('/profile/password',          'Unwinded\Controllers\Admin\ProfileController@password','admin.profile.password');
+    $router->get('/profile',                    'Unwinded\Controllers\Admin\ProfileController@show',           'admin.profile');
+    $router->post('/profile',                   'Unwinded\Controllers\Admin\ProfileController@update',         'admin.profile.update');
+    $router->post('/profile/password',          'Unwinded\Controllers\Admin\ProfileController@changePassword', 'admin.profile.password');
 });

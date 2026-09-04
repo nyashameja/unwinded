@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Unwinded\Core\Database;
+use Unwinded\Support\Ref;
 
 class AdminUserSeeder
 {
@@ -20,11 +21,11 @@ class AdminUserSeeder
         }
 
         $userId = $db->insert('users', [
-            'name'           => $name,
-            'email'          => $email,
-            'password_hash'  => password_hash($password, PASSWORD_ARGON2ID),
-            'is_super_admin' => 1,
-            'is_active'      => 1,
+            'public_ref'    => Ref::generate('USR'),
+            'name'          => $name,
+            'email'         => $email,
+            'password_hash' => password_hash($password, PASSWORD_ARGON2ID),
+            'is_active'     => 1,
         ]);
 
         $superAdminRole = $db->fetchOne("SELECT id FROM roles WHERE name = 'super_admin'");

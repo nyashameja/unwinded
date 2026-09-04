@@ -83,16 +83,41 @@ Full architecture document covering:
 
 ---
 
-## Phase 3 — Admin Authentication (NEXT)
+## Phase 3 — Admin Authentication ✅ COMPLETE
 
-**Scope:**
-- `AdminController` — login (rate-limited), logout, session regeneration
-- Password reset flow (token → hash, email via queue, time-limited)
-- Profile/password change
-- Activity logging on login/logout
-- Functional admin dashboard with real stats
+**Branch:** `claude/unwinded-cms-architecture-71ytmv`
 
-**Exit criteria:** Can log in, reset password, view dashboard with live DB counts.
+### Deliverables
+
+**Services**
+- `ActivityLogger` — writes to `activity_logs` table; intentionally non-transactional
+
+**Controllers (app/Controllers/Admin/)**
+- `AuthController` — `showLogin`, `login` (rate-limited, 10/15 min per IP), `logout`
+- `PasswordResetController` — forgot-password form, send reset link (5/hr per IP, email-enumeration-safe), show reset form, reset password (DB transaction, forces logout)
+- `ProfileController` — show profile, update name, change password (forces re-login)
+- `DashboardController` — 9 live stats + recent activity log (20 entries)
+
+**Views (app/Views/admin/)**
+- `auth/forgot-password.php` — self-contained HTML (no layout)
+- `auth/reset-password.php` — self-contained HTML (no layout)
+- `profile/edit.php` — tabbed profile/password form inside admin layout
+
+**Container / DI**
+- `Container::build()` — reflection-based auto-wiring for controller instantiation
+- All core services registered by both alias and full class name
+- `Request` registered in container from `public/index.php`
+
+**Router fix**
+- Controllers resolved via `container->build()` (auto-wired) instead of `new ControllerClass($container)`
+- Route params passed as positional args to controller methods
+
+**Routes (admin.php)**
+- Guest group now includes CSRF middleware on POST routes
+- Password reset routes added: GET/POST `/admin/password/reset`, GET/POST `/admin/password/reset/{token}`
+- Route method names corrected to match controller methods
+
+**Exit criteria met:** Can log in, reset password, view dashboard with live DB counts.
 
 ---
 

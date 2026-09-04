@@ -131,8 +131,9 @@ class Router
 
         // "ControllerClass@method" string
         [$controllerClass, $method] = explode('@', $handler, 2);
-        $controller = new $controllerClass($this->container);
-        return $controller->$method($request, $params);
+        $controller = $this->container->build($controllerClass);
+        // Pass route params as positional args (e.g. showReset($token))
+        return $controller->$method(...array_values($params));
     }
 
     private function notFound(Request $request): Response
