@@ -9,7 +9,9 @@ use Unwinded\Core\Request;
 use Unwinded\Core\Response;
 use Unwinded\Core\View;
 use Unwinded\Services\ActivityLogger;
+use Unwinded\Services\MailService;
 use Unwinded\Services\MediaUploadService;
+use Unwinded\Support\Token;
 
 class BookingController
 {
@@ -23,6 +25,7 @@ class BookingController
         private View               $view,
         private ActivityLogger     $activityLogger,
         private MediaUploadService $mediaUpload,
+        private MailService        $mail,
     ) {}
 
     public function index(): Response
@@ -337,6 +340,65 @@ class BookingController
 
         $this->activityLogger->log('booking.document_uploaded', 'booking', $id);
         flash('success', 'Document uploaded.');
+        return Response::make()->redirect(url('/admin/bookings/' . $id));
+    }
+
+    public function sendPaymentLink(string $id): Response
+    {
+        $booking = $this->findWithCustomer((int) $id);
+        if (!$booking) {
+            flash('error', 'Booking not found.');
+            return Response::make()->redirect(url('/admin/bookings'));
+        }
+
+        if ((int) $booking['outstanding_cents'] <= 0) {
+            flash('info', 'This booking is already paid in full.');
+            return Response::make()->redirect(url('/admin/bookings/' . $id));
+        }
+
+        // Generate a secure token; store only the SHA-256 hash
+        $token       = Token::generate();  // ['raw' => hex, 'hash' => sha256]
+        $tokenHash   = $token['hash'];
+        $tokenBase64 = base64_encode(hex2bin($token['raw']));
+
+        // Expire any previous tokens for this booking so only one link works at a time
+        $this->db->execute(
+            "UPDATE payment_access_tokens SET expires_at=NOW() WHERE booking_id=? AND (expires_at IS NULL OR expires_at > NOW())",
+            [(int) $id]
+        );
+
+        $this->db->execute(
+            "INSERT INTO payment_access_tokens (token_hash, booking_id, expires_at, created_at)
+             VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 30 DAY), NOW())",
+            [$tokenHash, (int) $id]
+        );
+
+        $paymentUrl = url('/pay/' . $booking['public_ref'] . '/' . $tokenBase64);
+
+        $siteName = setting('site.name', 'Unwinded');
+        $body = '<p>Dear ' . htmlspecialchars($booking['customer_name']) . ',</p>'
+            . '<p>Your booking is confirmed — please use the secure link below to pay your '
+            . ($booking['amount_paid_cents'] > 0 ? 'outstanding balance' : 'deposit') . '.</p>'
+            . '<p><a href="' . htmlspecialchars($paymentUrl) . '" style="display:inline-block;background:#1a1a1a;color:#fff;padding:.75rem 1.5rem;border-radius:6px;text-decoration:none;font-weight:600;">Pay now</a></p>'
+            . '<p style="font-size:.875rem;color:#666;">Or copy this link into your browser:<br>'
+            . '<a href="' . htmlspecialchars($paymentUrl) . '">' . htmlspecialchars($paymentUrl) . '</a></p>'
+            . '<p style="font-size:.875rem;color:#666;">This link is valid for 30 days. If you have any questions, reply to this email or contact us.</p>'
+            . '<p>Thank you,<br>' . htmlspecialchars($siteName) . ' team</p>';
+
+        try {
+            $this->mail->send(
+                $booking['customer_email'],
+                $booking['customer_name'],
+                'Your payment link — Booking ' . $booking['public_ref'],
+                $body,
+            );
+        } catch (\Throwable $e) {
+            flash('error', 'Token created but email failed to send: ' . $e->getMessage());
+            return Response::make()->redirect(url('/admin/bookings/' . $id));
+        }
+
+        $this->activityLogger->log('booking.payment_link_sent', 'booking', $id);
+        flash('success', 'Payment link sent to ' . $booking['customer_email'] . '.');
         return Response::make()->redirect(url('/admin/bookings/' . $id));
     }
 

@@ -99,6 +99,14 @@
         </table>
         <?php endif; ?>
 
+        <?php if ((int) $booking['outstanding_cents'] > 0): ?>
+        <form method="POST" action="<?= url('/admin/bookings/' . (int) $booking['id'] . '/send-payment-link') ?>" style="margin-bottom:1rem;" onsubmit="return confirm('Send a payment link to <?= e(addslashes($booking['customer_email'])) ?>?');">
+          <?= csrf_field() ?>
+          <button type="submit" class="btn btn--sm btn--primary">&#9993; Send payment link</button>
+          <span style="margin-left:.5rem;font-size:.875rem;color:#555;">Emails a secure 30-day payment link to <?= e($booking['customer_email']) ?></span>
+        </form>
+        <?php endif; ?>
+
         <details style="margin-top:1rem;">
           <summary class="btn btn--xs btn--secondary">Record EFT payment</summary>
           <form method="POST" action="<?= url('/admin/payments/eft') ?>" style="margin-top:1rem;">

@@ -70,9 +70,10 @@ $router->group(['middleware' => [CsrfMiddleware::class]], function (Router $rout
 });
 
 // ── Payment ────────────────────────────────────────────────────────────────
-$router->get('/pay/{ref}/{token}',  'Unwinded\Controllers\Public\PaymentController@show',     'pay');
+$router->get('/pay/{ref}/{token}',         'Unwinded\Controllers\Public\PaymentController@show',     'pay');
+$router->get('/pay/{ref}/{token}/return',  'Unwinded\Controllers\Public\PaymentController@return',   'pay.return');
 $router->group(['middleware' => [CsrfMiddleware::class]], function (Router $router) {
-    $router->post('/pay/{ref}/{token}', 'Unwinded\Controllers\Public\PaymentController@initiate', 'pay.initiate');
+    $router->post('/pay/{ref}/{token}',    'Unwinded\Controllers\Public\PaymentController@initiate', 'pay.initiate');
 });
 
 // ── Newsletter ─────────────────────────────────────────────────────────────

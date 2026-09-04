@@ -59,6 +59,21 @@ class SettingsSeeder
             // Maintenance
             ['key' => 'site.maintenance_mode',    'value' => '0', 'type' => 'boolean', 'group' => 'system', 'label' => 'Maintenance Mode'],
             ['key' => 'site.maintenance_message', 'value' => 'We\'re making some improvements. Check back soon!', 'type' => 'text', 'group' => 'system', 'label' => 'Maintenance Message'],
+
+            // PayFast payment gateway
+            ['key' => 'payfast.merchant_id',  'value' => '',  'type' => 'string',  'group' => 'payfast', 'label' => 'PayFast Merchant ID'],
+            ['key' => 'payfast.merchant_key', 'value' => '',  'type' => 'string',  'group' => 'payfast', 'label' => 'PayFast Merchant Key'],
+            ['key' => 'payfast.passphrase',   'value' => '',  'type' => 'string',  'group' => 'payfast', 'label' => 'PayFast Passphrase'],
+            ['key' => 'payfast.sandbox',      'value' => '1', 'type' => 'boolean', 'group' => 'payfast', 'label' => 'PayFast Sandbox Mode'],
+
+            // Banking / EFT details
+            ['key' => 'bank.account_name',   'value' => 'Unwinded (Pty) Ltd',               'type' => 'string', 'group' => 'bank', 'label' => 'Account Name'],
+            ['key' => 'bank.bank_name',      'value' => 'FNB',                              'type' => 'string', 'group' => 'bank', 'label' => 'Bank Name'],
+            ['key' => 'bank.account_number', 'value' => '000 000 0000',                     'type' => 'string', 'group' => 'bank', 'label' => 'Account Number'],
+            ['key' => 'bank.branch_code',    'value' => '250655',                           'type' => 'string', 'group' => 'bank', 'label' => 'Branch Code'],
+            ['key' => 'bank.account_type',   'value' => 'Cheque',                           'type' => 'string', 'group' => 'bank', 'label' => 'Account Type'],
+            ['key' => 'bank.reference_note', 'value' => 'Use your booking reference as proof of payment reference.', 'type' => 'text', 'group' => 'bank', 'label' => 'Payment Reference Note'],
+            ['key' => 'bank.details',        'value' => "Bank: FNB\nAccount name: Unwinded (Pty) Ltd\nAccount number: 000 000 0000\nBranch code: 250655\nAccount type: Cheque\n\nPlease use your booking reference as the payment reference and send proof of payment to hello@unwinded.co.za.", 'type' => 'text', 'group' => 'bank', 'label' => 'Full EFT Details (displayed on payment page)'],
         ];
 
         foreach ($settings as $setting) {

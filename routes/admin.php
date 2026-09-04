@@ -110,7 +110,8 @@ $router->group(['prefix' => '/admin', 'middleware' => [AuthMiddleware::class, Cs
     $router->post('/bookings/{id}',             'Unwinded\Controllers\Admin\BookingController@update',   'admin.bookings.update');
     $router->post('/bookings/{id}/status',      'Unwinded\Controllers\Admin\BookingController@status',   'admin.bookings.status');
     $router->post('/bookings/{id}/note',        'Unwinded\Controllers\Admin\BookingController@addNote',  'admin.bookings.note');
-    $router->post('/bookings/{id}/document',    'Unwinded\Controllers\Admin\BookingController@upload',   'admin.bookings.upload');
+    $router->post('/bookings/{id}/document',    'Unwinded\Controllers\Admin\BookingController@upload',          'admin.bookings.upload');
+    $router->post('/bookings/{id}/send-payment-link', 'Unwinded\Controllers\Admin\BookingController@sendPaymentLink', 'admin.bookings.send-payment-link');
 
     // ── Payments ───────────────────────────────────────────────────────────
     $router->get('/payments',                   'Unwinded\Controllers\Admin\PaymentController@index',    'admin.payments');
