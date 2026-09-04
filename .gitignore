@@ -1,0 +1,39 @@
+# Environment — never committed
+.env
+
+# Composer dev artifacts (vendor IS committed for production deploy)
+# Remove vendor from this list if you want to commit it
+# vendor/
+
+# Storage — runtime data, not source
+storage/logs/*.log
+storage/cache/*
+storage/sessions/*
+storage/temp/*
+storage/private/galleries/*
+storage/private/documents/*
+storage/private/uploads/*
+
+# Keep .gitkeep placeholders
+!storage/**/.gitkeep
+!public/uploads/.gitkeep
+
+# Generated assets (rebuilt on deploy)
+public/assets/dist/*.css
+public/assets/dist/*.js
+public/assets/dist/*.map
+
+# System files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# PHPUnit / test output
+.phpunit.result.cache
+/tests/coverage
+
+# IDE
+.idea/
+.vscode/
+*.iml
