@@ -121,11 +121,51 @@ Full architecture document covering:
 
 ---
 
-## Phases 4–12 (Pending Phase 3 Approval)
+## Phase 4 — Settings, Media Library, Content Pages ✅ COMPLETE
+
+**Branch:** `claude/unwinded-cms-architecture-71ytmv`
+
+### Deliverables
+
+**Services**
+- `SettingsService` — lazy-loads all settings on first access; `get()`, `set()`, `bulkSet()`, `grouped()` for admin form
+- `MailService` — PHPMailer wrapper; SMTP credentials from config (never DB); `send()`, `testConnection()`
+- `MediaUploadService` — GD-based WebP resize; originals in `storage/private/media/`; public variants in `public/media/`; sizes: thumb 400×400 crop, medium 1000×1000 fit, large 1800×1800 fit
+
+**Controllers (app/Controllers/Admin/)**
+- `SettingsController` — grouped settings form, boolean checkbox handling, SMTP test (JSON response)
+- `MediaController` — paginated grid (36/page), AJAX upload returning JSON, soft-delete
+- `PageController` — full CRUD; auto-slug; revision history on every save; system pages cannot be deleted
+- `HomepageController` — section config edit (JSON merge), visibility toggle, drag-to-reorder (AJAX)
+- `NavigationController` — atomic menu rebuild: DELETE all items then re-INSERT from form data
+- `RedirectController` — upsert on source URL, hit counter display
+- `ExperienceController` — type/slug/sort/active/CTA/SEO fields
+
+**Views (app/Views/admin/)**
+- `settings/index.php` — grouped settings form; type-appropriate inputs; sticky Save; SMTP test
+- `media/index.php` — CSS grid; JS `fetch()` upload; pagination
+- `pages/index.php`, `pages/create.php`, `pages/edit.php`, `pages/_form.php` — full CRUD with shared partial
+- `homepage/index.php` — expandable section cards; drag-to-reorder vanilla JS
+- `navigation/index.php` — add/remove items JS; target select
+- `redirects/index.php` — inline add form; hits counter
+- `experiences/index.php`, `experiences/edit.php` — two-column edit layout
+
+**Helpers**
+- `setting(string $key, mixed $default)` — request-scoped setting lookup
+
+**Media storage**
+- Originals → `storage/private/media/{year}/{month}/` (outside web root)
+- Public WebP variants → `public/media/{year}/{month}/` (gitignored, rebuilt on upload)
+- `.gitkeep` files track both directories in git
+
+**Exit criteria met:** Settings can be saved and tested; media can be uploaded, browsed, and deleted; pages/homepage/navigation/redirects/experiences can be edited via the CMS.
+
+---
+
+## Phases 5–12 (Pending Phase 4 Approval)
 
 | Phase | Description |
 |-------|-------------|
-| 4 | Settings, media library, content pages |
 | 5 | Public website (all 35 pages) |
 | 6 | Quotes & bookings CMS |
 | 7 | Public events & ticket sales |

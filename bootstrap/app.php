@@ -22,6 +22,9 @@ use Unwinded\Core\View;
 use Unwinded\Core\RateLimiter;
 use Unwinded\Core\EventBus;
 use Unwinded\Services\ActivityLogger;
+use Unwinded\Services\MailService;
+use Unwinded\Services\MediaUploadService;
+use Unwinded\Services\SettingsService;
 
 // ── 1. Autoloader ──────────────────────────────────────────────────────────
 defined('APP_ROOT') || define('APP_ROOT', dirname(__DIR__));
@@ -150,10 +153,27 @@ $eventBus = new EventBus();
 $container->instance('events', $eventBus);
 
 // ── 14. Services ───────────────────────────────────────────────────────────
+$settingsService = new SettingsService($db);
+$container->instance('settings', $settingsService);
+$container->instance(SettingsService::class, $settingsService);
+
+$mailService = new MailService($config->get('mail', []));
+$container->instance('mail', $mailService);
+$container->instance(MailService::class, $mailService);
+
 if (PHP_SAPI !== 'cli') {
     $activityLogger = new ActivityLogger($db, $auth);
     $container->instance('activityLogger', $activityLogger);
     $container->instance(ActivityLogger::class, $activityLogger);
+
+    $mediaUpload = new MediaUploadService(
+        db:          $db,
+        privateBase: $paths['private'] . '/media',
+        publicBase:  $paths['public'] . '/media',
+        publicUrl:   rtrim($config->get('app.url', ''), '/') . '/media',
+    );
+    $container->instance('mediaUpload', $mediaUpload);
+    $container->instance(MediaUploadService::class, $mediaUpload);
 }
 
 // ── 15. Router ─────────────────────────────────────────────────────────────

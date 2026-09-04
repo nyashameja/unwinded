@@ -13,10 +13,15 @@ storage/temp/*
 storage/private/galleries/*
 storage/private/documents/*
 storage/private/uploads/*
+storage/private/media/*
+
+# Uploaded public media (WebP variants)
+public/media/*
 
 # Keep .gitkeep placeholders
 !storage/**/.gitkeep
 !public/uploads/.gitkeep
+!public/media/.gitkeep
 
 # Generated assets (rebuilt on deploy)
 public/assets/dist/*.css

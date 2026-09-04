@@ -151,6 +151,14 @@ function flash(?string $type = null, ?string $message = null): mixed
 }
 
 /**
+ * Read a value from the settings table. Cached per request.
+ */
+function setting(string $key, mixed $default = null): mixed
+{
+    return app('settings')->get($key, $default);
+}
+
+/**
  * Log a message to the application log.
  */
 function logger(string $level, string $message, array $context = []): void
