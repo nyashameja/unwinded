@@ -11,7 +11,7 @@ CREATE TABLE settings (
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_settings_group (group_name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE redirects (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -24,7 +24,7 @@ CREATE TABLE redirects (
     updated_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_redirects_source (source_url),
     INDEX idx_redirects_active (is_active)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE not_found_log (
     id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -35,7 +35,7 @@ CREATE TABLE not_found_log (
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_nfl_url        (url(191)),
     INDEX idx_nfl_created_at (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE menus (
     id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -43,7 +43,7 @@ CREATE TABLE menus (
     label       VARCHAR(200) NOT NULL,
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE menu_items (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -61,7 +61,7 @@ CREATE TABLE menu_items (
     INDEX idx_menu_items_menu   (menu_id),
     INDEX idx_menu_items_parent (parent_id),
     INDEX idx_menu_items_sort   (sort_order)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE pages (
     id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -84,7 +84,7 @@ CREATE TABLE pages (
     INDEX idx_pages_slug      (slug),
     INDEX idx_pages_status    (status),
     INDEX idx_pages_deleted   (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE page_revisions (
     id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -96,7 +96,7 @@ CREATE TABLE page_revisions (
     FOREIGN KEY (page_id)  REFERENCES pages(id) ON DELETE CASCADE,
     FOREIGN KEY (saved_by) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_page_revisions_page (page_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE homepage_sections (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -108,7 +108,7 @@ CREATE TABLE homepage_sections (
     created_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_homepage_sections_sort (sort_order)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE experiences (
     id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -129,7 +129,7 @@ CREATE TABLE experiences (
     INDEX idx_experiences_slug   (slug),
     INDEX idx_experiences_type   (type),
     INDEX idx_experiences_active (is_active)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS experiences;

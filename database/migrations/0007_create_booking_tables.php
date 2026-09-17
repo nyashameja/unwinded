@@ -48,7 +48,7 @@ CREATE TABLE private_bookings (
     INDEX idx_pb_customer        (customer_id),
     INDEX idx_pb_event_date      (event_date),
     INDEX idx_pb_deleted         (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE booking_items (
     id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -65,7 +65,7 @@ CREATE TABLE booking_items (
     FOREIGN KEY (package_id) REFERENCES packages(id)          ON DELETE SET NULL,
     FOREIGN KEY (extra_id)   REFERENCES package_extras(id)    ON DELETE SET NULL,
     INDEX idx_booking_items_booking (booking_id, sort_order)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE booking_notes (
     id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -77,7 +77,7 @@ CREATE TABLE booking_notes (
     FOREIGN KEY (booking_id) REFERENCES private_bookings(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id)    REFERENCES users(id)            ON DELETE SET NULL,
     INDEX idx_booking_notes_booking (booking_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE booking_status_history (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -91,7 +91,7 @@ CREATE TABLE booking_status_history (
     FOREIGN KEY (booking_id) REFERENCES private_bookings(id) ON DELETE CASCADE,
     FOREIGN KEY (changed_by) REFERENCES users(id)            ON DELETE SET NULL,
     INDEX idx_bsh_booking (booking_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE booking_documents (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -106,7 +106,7 @@ CREATE TABLE booking_documents (
     FOREIGN KEY (media_id)    REFERENCES media(id)            ON DELETE SET NULL,
     FOREIGN KEY (uploaded_by) REFERENCES users(id)            ON DELETE SET NULL,
     INDEX idx_booking_docs_booking (booking_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS booking_documents;

@@ -20,7 +20,7 @@ CREATE TABLE discount_codes (
     INDEX idx_discount_codes_code    (code),
     INDEX idx_discount_codes_active  (is_active),
     INDEX idx_discount_codes_expires (expires_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE discount_code_usage (
     id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -36,7 +36,7 @@ CREATE TABLE discount_code_usage (
     INDEX idx_dcu_discount  (discount_id),
     INDEX idx_dcu_customer  (customer_id),
     INDEX idx_dcu_entity    (entity_type, entity_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS discount_code_usage;

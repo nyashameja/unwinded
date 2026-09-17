@@ -22,7 +22,7 @@ CREATE TABLE packages (
     INDEX idx_packages_slug    (slug),
     INDEX idx_packages_status  (status),
     INDEX idx_packages_deleted (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE package_features (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -33,7 +33,7 @@ CREATE TABLE package_features (
     sort_order   INT NOT NULL DEFAULT 0,
     FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE CASCADE,
     INDEX idx_package_features_pkg (package_id, sort_order)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE package_extras (
     id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -48,7 +48,7 @@ CREATE TABLE package_extras (
     created_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at     DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_package_extras_active (is_active)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE package_extra_links (
     package_id      BIGINT UNSIGNED NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE package_extra_links (
     PRIMARY KEY (package_id, extra_id),
     FOREIGN KEY (package_id) REFERENCES packages(id) ON DELETE CASCADE,
     FOREIGN KEY (extra_id)   REFERENCES package_extras(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS package_extra_links;

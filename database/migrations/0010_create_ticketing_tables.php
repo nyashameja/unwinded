@@ -29,7 +29,7 @@ CREATE TABLE ticket_orders (
     INDEX idx_to_customer    (customer_id),
     INDEX idx_to_reserved    (reserved_until),
     INDEX idx_to_purchaser   (purchaser_email)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE order_items (
     id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -42,7 +42,7 @@ CREATE TABLE order_items (
     FOREIGN KEY (ticket_type_id) REFERENCES event_ticket_types(id) ON DELETE RESTRICT,
     INDEX idx_order_items_order  (order_id),
     INDEX idx_order_items_type   (ticket_type_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE ticket_reservations (
     id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -57,7 +57,7 @@ CREATE TABLE ticket_reservations (
     INDEX idx_tr_type    (ticket_type_id),
     INDEX idx_tr_order   (order_id),
     INDEX idx_tr_expires (expires_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE tickets (
     id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -77,7 +77,7 @@ CREATE TABLE tickets (
     INDEX idx_tickets_order  (order_id),
     INDEX idx_tickets_event  (event_id),
     INDEX idx_tickets_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE ticket_checkins (
     id             BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -91,7 +91,7 @@ CREATE TABLE ticket_checkins (
     FOREIGN KEY (ticket_id)    REFERENCES tickets(id) ON DELETE RESTRICT,
     FOREIGN KEY (checked_in_by)REFERENCES users(id)   ON DELETE SET NULL,
     FOREIGN KEY (override_by)  REFERENCES users(id)   ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS ticket_checkins;

@@ -15,7 +15,7 @@ CREATE TABLE users (
     INDEX idx_users_email    (email),
     INDEX idx_users_active   (is_active),
     INDEX idx_users_deleted  (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE roles (
     id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -25,7 +25,7 @@ CREATE TABLE roles (
     description TEXT NULL,
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE permissions (
     id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -34,7 +34,7 @@ CREATE TABLE permissions (
     group_name  VARCHAR(100) NOT NULL DEFAULT 'general',
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     INDEX idx_permissions_group (group_name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE role_permissions (
     role_id       BIGINT UNSIGNED NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE role_permissions (
     PRIMARY KEY (role_id, permission_id),
     FOREIGN KEY (role_id)       REFERENCES roles(id)       ON DELETE CASCADE,
     FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE user_roles (
     user_id   BIGINT UNSIGNED NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE user_roles (
     PRIMARY KEY (user_id, role_id),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE password_resets (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -62,7 +62,7 @@ CREATE TABLE password_resets (
     INDEX idx_password_resets_email      (email),
     INDEX idx_password_resets_token_hash (token_hash),
     INDEX idx_password_resets_expires    (expires_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE login_attempts (
     id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -73,7 +73,7 @@ CREATE TABLE login_attempts (
     INDEX idx_login_attempts_email      (email),
     INDEX idx_login_attempts_ip         (ip_address),
     INDEX idx_login_attempts_created_at (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE activity_logs (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -90,7 +90,7 @@ CREATE TABLE activity_logs (
     INDEX idx_activity_logs_entity      (entity_type, entity_id),
     INDEX idx_activity_logs_action      (action),
     INDEX idx_activity_logs_created_at  (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS activity_logs;

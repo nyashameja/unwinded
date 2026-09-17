@@ -23,7 +23,7 @@ CREATE TABLE payments (
     INDEX idx_payments_status      (status),
     INDEX idx_payments_gateway_ref (gateway, gateway_ref),
     INDEX idx_payments_created_at  (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE payment_allocations (
     id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -37,7 +37,7 @@ CREATE TABLE payment_allocations (
     FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE RESTRICT,
     INDEX idx_pa_payment  (payment_id),
     INDEX idx_pa_payable  (payable_type, payable_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE payment_webhooks (
     id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -54,7 +54,7 @@ CREATE TABLE payment_webhooks (
     INDEX idx_pw_payment   (payment_id),
     INDEX idx_pw_status    (status),
     INDEX idx_pw_received  (received_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE payment_logs (
     id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -64,7 +64,7 @@ CREATE TABLE payment_logs (
     created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (payment_id) REFERENCES payments(id) ON DELETE SET NULL,
     INDEX idx_payment_logs_payment (payment_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE refunds (
     id                   BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -87,7 +87,7 @@ CREATE TABLE refunds (
     FOREIGN KEY (processed_by) REFERENCES users(id)    ON DELETE SET NULL,
     INDEX idx_refunds_payment (payment_id),
     INDEX idx_refunds_status  (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE eft_proofs (
     id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -102,7 +102,7 @@ CREATE TABLE eft_proofs (
     FOREIGN KEY (media_id)    REFERENCES media(id)    ON DELETE SET NULL,
     FOREIGN KEY (verified_by) REFERENCES users(id)    ON DELETE SET NULL,
     INDEX idx_eft_proofs_payment (payment_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS eft_proofs;

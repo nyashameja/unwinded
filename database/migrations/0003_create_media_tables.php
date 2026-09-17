@@ -26,7 +26,7 @@ CREATE TABLE media (
     INDEX idx_media_private     (is_private),
     INDEX idx_media_year_month  (year, month),
     INDEX idx_media_deleted     (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE media_usages (
     id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -38,7 +38,7 @@ CREATE TABLE media_usages (
     FOREIGN KEY (media_id) REFERENCES media(id) ON DELETE CASCADE,
     UNIQUE KEY uniq_usage (media_id, entity_type, entity_id, field_name),
     INDEX idx_media_usages_entity (entity_type, entity_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS media_usages;

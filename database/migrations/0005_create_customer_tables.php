@@ -19,7 +19,7 @@ CREATE TABLE customers (
     INDEX idx_customers_email      (email),
     INDEX idx_customers_public_ref (public_ref),
     INDEX idx_customers_deleted    (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE customer_consents (
     id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -31,7 +31,7 @@ CREATE TABLE customer_consents (
     created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
     INDEX idx_customer_consents_cust (customer_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS customer_consents;

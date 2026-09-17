@@ -13,7 +13,7 @@ CREATE TABLE payment_access_tokens (
     FOREIGN KEY (order_id)   REFERENCES ticket_orders(id)    ON DELETE CASCADE,
     INDEX idx_pat_booking (booking_id),
     INDEX idx_pat_order   (order_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS payment_access_tokens;

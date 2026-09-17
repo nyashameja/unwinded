@@ -40,7 +40,7 @@ CREATE TABLE public_events (
     INDEX idx_pe_status     (status),
     INDEX idx_pe_event_date (event_date),
     INDEX idx_pe_deleted    (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE event_images (
     id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -50,7 +50,7 @@ CREATE TABLE event_images (
     FOREIGN KEY (event_id) REFERENCES public_events(id) ON DELETE CASCADE,
     FOREIGN KEY (media_id) REFERENCES media(id)         ON DELETE CASCADE,
     INDEX idx_event_images_event (event_id, sort_order)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE event_ticket_types (
     id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -74,7 +74,7 @@ CREATE TABLE event_ticket_types (
     CHECK (qty_reserved + qty_sold <= qty_available),
     INDEX idx_ett_event  (event_id, sort_order),
     INDEX idx_ett_active (is_active)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS event_ticket_types;

@@ -42,7 +42,7 @@ CREATE TABLE gallery_albums (
     INDEX idx_ga_featured  (is_featured),
     INDEX idx_ga_event     (event_date),
     INDEX idx_ga_deleted   (deleted_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE gallery_images (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -56,7 +56,7 @@ CREATE TABLE gallery_images (
     FOREIGN KEY (album_id) REFERENCES gallery_albums(id) ON DELETE CASCADE,
     FOREIGN KEY (media_id) REFERENCES media(id)          ON DELETE RESTRICT,
     INDEX idx_gallery_images_album (album_id, sort_order)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE gallery_access_tokens (
     id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -73,7 +73,7 @@ CREATE TABLE gallery_access_tokens (
     INDEX idx_gat_album      (album_id),
     INDEX idx_gat_token_hash (token_hash),
     INDEX idx_gat_active     (is_active)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE gallery_access_logs (
     id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -87,7 +87,7 @@ CREATE TABLE gallery_access_logs (
     INDEX idx_gal_token   (token_id),
     INDEX idx_gal_album   (album_id),
     INDEX idx_gal_created (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE gallery_publish_consents (
     id            BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -102,7 +102,7 @@ CREATE TABLE gallery_publish_consents (
     FOREIGN KEY (customer_id) REFERENCES customers(id)      ON DELETE SET NULL,
     FOREIGN KEY (recorded_by) REFERENCES users(id)          ON DELETE SET NULL,
     INDEX idx_gpc_album (album_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS gallery_publish_consents;

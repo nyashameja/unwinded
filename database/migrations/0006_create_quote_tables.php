@@ -50,7 +50,7 @@ CREATE TABLE quote_requests (
     INDEX idx_qr_status      (status),
     INDEX idx_qr_customer    (customer_id),
     INDEX idx_qr_created_at  (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE quote_request_attachments (
     id              BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -59,7 +59,7 @@ CREATE TABLE quote_request_attachments (
     created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (request_id) REFERENCES quote_requests(id) ON DELETE CASCADE,
     FOREIGN KEY (media_id)   REFERENCES media(id) ON DELETE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE quotes (
     id                   BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -104,7 +104,7 @@ CREATE TABLE quotes (
     INDEX idx_quotes_status      (status),
     INDEX idx_quotes_customer    (customer_id),
     INDEX idx_quotes_valid_until (valid_until)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE quote_access_tokens (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -116,7 +116,7 @@ CREATE TABLE quote_access_tokens (
     FOREIGN KEY (quote_id) REFERENCES quotes(id) ON DELETE CASCADE,
     INDEX idx_qat_quote_id   (quote_id),
     INDEX idx_qat_token_hash (token_hash)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE quote_items (
     id                BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -134,7 +134,7 @@ CREATE TABLE quote_items (
     FOREIGN KEY (package_id) REFERENCES packages(id)       ON DELETE SET NULL,
     FOREIGN KEY (extra_id)   REFERENCES package_extras(id) ON DELETE SET NULL,
     INDEX idx_quote_items_quote (quote_id, sort_order)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE quote_notes (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -147,7 +147,7 @@ CREATE TABLE quote_notes (
     FOREIGN KEY (quote_id) REFERENCES quotes(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id)  REFERENCES users(id)  ON DELETE SET NULL,
     INDEX idx_quote_notes_quote (quote_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE quote_status_history (
     id           BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -164,7 +164,7 @@ CREATE TABLE quote_status_history (
     FOREIGN KEY (changed_by) REFERENCES users(id)          ON DELETE SET NULL,
     INDEX idx_qsh_quote   (quote_id),
     INDEX idx_qsh_request (request_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ",
 'down' => "
 DROP TABLE IF EXISTS quote_status_history;
