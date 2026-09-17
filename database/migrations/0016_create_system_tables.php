@@ -31,14 +31,10 @@ return new class {
         $db->execute("
             CREATE TABLE rate_limits (
                 id          BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-                `key`       VARCHAR(200)    NOT NULL,
-                attempts    INT UNSIGNED    NOT NULL DEFAULT 0,
-                reset_at    DATETIME        NOT NULL,
+                key_hash    VARCHAR(64)     NOT NULL,
                 created_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                updated_at  DATETIME        NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 PRIMARY KEY (id),
-                UNIQUE KEY uq_rate_key (`key`),
-                KEY idx_reset_at (reset_at)
+                KEY idx_key_hash_created (key_hash, created_at)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
     }
