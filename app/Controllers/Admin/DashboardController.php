@@ -29,14 +29,14 @@ class DashboardController
 
             'upcoming_bookings' => $this->db->fetchScalar(
                 "SELECT COUNT(*) FROM private_bookings
-                 WHERE event_date_utc >= NOW() AND status NOT IN ('cancelled','refunded')"
+                 WHERE event_date_utc >= NOW() AND booking_status NOT IN ('cancelled','refunded')"
             ) ?? 0,
 
             'deposits_overdue' => $this->db->fetchScalar(
                 "SELECT COUNT(*) FROM private_bookings
                  WHERE deposit_hard_deadline < NOW()
-                   AND deposit_status = 'pending'
-                   AND status NOT IN ('cancelled','refunded')"
+                   AND payment_status = 'unpaid'
+                   AND booking_status NOT IN ('cancelled','refunded')"
             ) ?? 0,
 
             'upcoming_events' => $this->db->fetchScalar(
