@@ -143,7 +143,7 @@ function cmd_migrate_fresh(Container $c, array $args): void
 
 function cmd_db_seed(Container $c, array $args): void
 {
-    $seedPath = path('database') . '/seeds';
+    $seedPath = APP_ROOT . '/database/seeds';
     $seeders  = [
         'RolesAndPermissionsSeeder',
         'AdminUserSeeder',
