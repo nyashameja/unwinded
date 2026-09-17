@@ -30,7 +30,7 @@ class GalleryController
         }
 
         $albums = $this->db->fetchAll(
-            "SELECT ga.*, m.public_url AS cover_url
+            "SELECT ga.*, CONCAT('/media/', m.year, '/', m.month, '/', m.public_ref, '_medium.webp') AS cover_url
              FROM gallery_albums ga
              LEFT JOIN media m ON m.id = ga.cover_image_id AND m.deleted_at IS NULL
              WHERE {$where}
@@ -62,7 +62,7 @@ class GalleryController
         }
 
         $images = $this->db->fetchAll(
-            "SELECT gi.*, m.public_url, m.file_name
+            "SELECT gi.*, CONCAT('/media/', m.year, '/', m.month, '/', m.public_ref, '_large.webp') AS public_url, m.file_name
              FROM gallery_images gi
              JOIN media m ON m.id = gi.media_id AND m.deleted_at IS NULL
              WHERE gi.album_id = ?
@@ -119,7 +119,7 @@ class GalleryController
         }
 
         $images = $this->db->fetchAll(
-            "SELECT gi.*, m.public_url, m.file_name
+            "SELECT gi.*, CONCAT('/media/', m.year, '/', m.month, '/', m.public_ref, '_large.webp') AS public_url, m.file_name
              FROM gallery_images gi
              JOIN media m ON m.id = gi.media_id AND m.deleted_at IS NULL
              WHERE gi.album_id = ?

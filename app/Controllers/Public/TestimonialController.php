@@ -18,7 +18,7 @@ class TestimonialController
     public function index(): Response
     {
         $testimonials = $this->db->fetchAll(
-            "SELECT t.*, m.public_url AS photo_url
+            "SELECT t.*, CONCAT('/media/', m.year, '/', m.month, '/', m.public_ref, '_thumb.webp') AS photo_url
              FROM testimonials t
              LEFT JOIN media m ON m.id = t.photo_media_id AND m.deleted_at IS NULL
              WHERE t.is_published = 1 AND t.deleted_at IS NULL
