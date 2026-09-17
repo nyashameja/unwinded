@@ -9,6 +9,11 @@ class Response
     private array  $headers = [];
     private string $body    = '';
 
+    public static function make(): static
+    {
+        return new static();
+    }
+
     public function status(int $code): static
     {
         $this->status = $code;
