@@ -54,7 +54,7 @@ class HomeController
         );
 
         $galleryAlbums = $this->db->fetchAll(
-            "SELECT ga.*, m.public_url AS cover_url
+            "SELECT ga.*, CONCAT('/media/', m.year, '/', m.month, '/', m.public_ref, '_medium.webp') AS cover_url
              FROM gallery_albums ga
              LEFT JOIN media m ON m.id = ga.cover_image_id AND m.deleted_at IS NULL
              WHERE ga.status = 'published' AND ga.is_featured = 1 AND ga.deleted_at IS NULL

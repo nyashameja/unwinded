@@ -64,7 +64,7 @@
           <a href="<?= url('/admin/orders') ?>" class="sidebar-nav__item <?= active('/admin/orders') ?>">Ticket Orders</a>
           <?php endif; ?>
           <?php if (can('tickets.checkin')): ?>
-          <a href="<?= url('/admin/checkin') ?>" class="sidebar-nav__item <?= active('/admin/checkin') ?>">Check In</a>
+          <a href="<?= url('/admin/events') ?>" class="sidebar-nav__item <?= active('/admin/events') ?>">Check In</a>
           <?php endif; ?>
         </div>
         <?php endif; ?>
@@ -143,7 +143,7 @@
           <a href="<?= url('/admin/roles') ?>" class="sidebar-nav__item <?= active('/admin/roles') ?>">Roles</a>
           <?php endif; ?>
           <a href="<?= url('/admin/email-templates') ?>" class="sidebar-nav__item <?= active('/admin/email-templates') ?>">Email Templates</a>
-          <a href="<?= url('/admin/activity') ?>" class="sidebar-nav__item <?= active('/admin/activity') ?>">Activity Log</a>
+          <a href="<?= url('/admin/activity-log') ?>" class="sidebar-nav__item <?= active('/admin/activity-log') ?>">Activity Log</a>
         </div>
         <?php endif; ?>
 

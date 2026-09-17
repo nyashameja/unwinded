@@ -21,7 +21,7 @@ class CustomerController
 
     public function index(): Response
     {
-        $q       = trim($this->request->str('q'));
+        $q       = trim($this->request->str('q') ?? '');
         $where   = "WHERE c.deleted_at IS NULL";
         $params  = [];
 

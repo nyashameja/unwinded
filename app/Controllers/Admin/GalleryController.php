@@ -43,7 +43,7 @@ class GalleryController
 
         $albums = $this->db->fetchAll(
             "SELECT ga.*,
-                    m.public_url AS cover_url,
+                    CONCAT('/media/', m.year, '/', m.month, '/', m.public_ref, '_medium.webp') AS cover_url,
                     (SELECT COUNT(*) FROM gallery_images gi WHERE gi.album_id = ga.id) AS image_count,
                     (SELECT COUNT(*) FROM gallery_access_tokens gat WHERE gat.album_id = ga.id AND gat.is_active = 1) AS token_count
                FROM gallery_albums ga
@@ -144,7 +144,7 @@ class GalleryController
         }
 
         $images = $this->db->fetchAll(
-            "SELECT gi.*, m.public_url, m.file_name
+            "SELECT gi.*, CONCAT('/media/', m.year, '/', m.month, '/', m.public_ref, '_large.webp') AS public_url, m.filename AS file_name
                FROM gallery_images gi
                JOIN media m ON m.id = gi.media_id AND m.deleted_at IS NULL
               WHERE gi.album_id = ?
@@ -189,7 +189,7 @@ class GalleryController
 
         [$data, $errors] = $this->validate();
         if ($errors) {
-            $images   = $this->db->fetchAll("SELECT gi.*, m.public_url FROM gallery_images gi JOIN media m ON m.id = gi.media_id WHERE gi.album_id = ? ORDER BY gi.sort_order", [(int) $id]);
+            $images   = $this->db->fetchAll("SELECT gi.*, CONCAT('/media/', m.year, '/', m.month, '/', m.public_ref, '_large.webp') AS public_url FROM gallery_images gi JOIN media m ON m.id = gi.media_id WHERE gi.album_id = ? ORDER BY gi.sort_order", [(int) $id]);
             $tokens   = $this->db->fetchAll("SELECT * FROM gallery_access_tokens WHERE album_id = ? ORDER BY created_at DESC", [(int) $id]);
             $events   = $this->db->fetchAll("SELECT id, title, event_date FROM public_events WHERE deleted_at IS NULL ORDER BY event_date DESC LIMIT 100");
             $bookings = $this->db->fetchAll(

@@ -22,7 +22,7 @@ class TestimonialController
     public function index(): Response
     {
         $testimonials = $this->db->fetchAll(
-            "SELECT t.*, m.public_url AS photo_url
+            "SELECT t.*, CONCAT('/media/', m.year, '/', m.month, '/', m.public_ref, '_thumb.webp') AS photo_url
                FROM testimonials t
                LEFT JOIN media m ON m.id = t.photo_media_id AND m.deleted_at IS NULL
               WHERE t.deleted_at IS NULL
@@ -40,7 +40,7 @@ class TestimonialController
     public function create(): Response
     {
         $media = $this->db->fetchAll(
-            "SELECT id, public_url, file_name FROM media WHERE deleted_at IS NULL AND mime_type LIKE 'image/%' ORDER BY created_at DESC LIMIT 200"
+            "SELECT id, CONCAT('/media/', year, '/', month, '/', public_ref, '_medium.webp') AS public_url, filename AS file_name FROM media WHERE deleted_at IS NULL AND mime_type LIKE 'image/%' ORDER BY created_at DESC LIMIT 200"
         );
 
         return Response::make()->html(
@@ -57,7 +57,7 @@ class TestimonialController
     {
         [$data, $errors] = $this->validate();
         if ($errors) {
-            $media = $this->db->fetchAll("SELECT id, public_url, file_name FROM media WHERE deleted_at IS NULL AND mime_type LIKE 'image/%' ORDER BY created_at DESC LIMIT 200");
+            $media = $this->db->fetchAll("SELECT id, CONCAT('/media/', year, '/', month, '/', public_ref, '_medium.webp') AS public_url, filename AS file_name FROM media WHERE deleted_at IS NULL AND mime_type LIKE 'image/%' ORDER BY created_at DESC LIMIT 200");
             return Response::make()->html(
                 $this->view->renderWithLayout('admin', 'admin/testimonials/create', [
                     'pageTitle' => 'New Testimonial',
@@ -95,7 +95,7 @@ class TestimonialController
             return Response::make()->redirect(url('/admin/testimonials'));
         }
 
-        $media = $this->db->fetchAll("SELECT id, public_url, file_name FROM media WHERE deleted_at IS NULL AND mime_type LIKE 'image/%' ORDER BY created_at DESC LIMIT 200");
+        $media = $this->db->fetchAll("SELECT id, CONCAT('/media/', year, '/', month, '/', public_ref, '_medium.webp') AS public_url, filename AS file_name FROM media WHERE deleted_at IS NULL AND mime_type LIKE 'image/%' ORDER BY created_at DESC LIMIT 200");
 
         return Response::make()->html(
             $this->view->renderWithLayout('admin', 'admin/testimonials/edit', [
@@ -118,7 +118,7 @@ class TestimonialController
 
         [$data, $errors] = $this->validate();
         if ($errors) {
-            $media = $this->db->fetchAll("SELECT id, public_url, file_name FROM media WHERE deleted_at IS NULL AND mime_type LIKE 'image/%' ORDER BY created_at DESC LIMIT 200");
+            $media = $this->db->fetchAll("SELECT id, CONCAT('/media/', year, '/', month, '/', public_ref, '_medium.webp') AS public_url, filename AS file_name FROM media WHERE deleted_at IS NULL AND mime_type LIKE 'image/%' ORDER BY created_at DESC LIMIT 200");
             return Response::make()->html(
                 $this->view->renderWithLayout('admin', 'admin/testimonials/edit', [
                     'pageTitle'   => 'Edit Testimonial',
@@ -196,7 +196,7 @@ class TestimonialController
     private function findOrFail(int $id): ?array
     {
         return $this->db->fetchOne(
-            "SELECT t.*, m.public_url AS photo_url FROM testimonials t LEFT JOIN media m ON m.id = t.photo_media_id WHERE t.id=? AND t.deleted_at IS NULL",
+            "SELECT t.*, CONCAT('/media/', m.year, '/', m.month, '/', m.public_ref, '_thumb.webp') AS photo_url FROM testimonials t LEFT JOIN media m ON m.id = t.photo_media_id WHERE t.id=? AND t.deleted_at IS NULL",
             [$id]
         ) ?: null;
     }
