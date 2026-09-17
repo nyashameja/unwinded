@@ -150,7 +150,7 @@
       </nav>
 
       <div class="sidebar-user">
-        <span class="sidebar-user__name"><?= e(auth()->user()['name'] ?? 'Admin') ?></span>
+        <span class="sidebar-user__name"><?= e(auth()['name'] ?? 'Admin') ?></span>
         <a href="<?= url('/admin/profile') ?>">Profile</a>
         <a href="<?= url('/admin/logout') ?>">Log out</a>
       </div>
