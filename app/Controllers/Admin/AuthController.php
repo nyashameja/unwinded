@@ -54,7 +54,7 @@ class AuthController
 
         if (!empty($errors)) {
             return Response::make()->html(
-                $this->view->renderWithLayout('admin/auth/login', 'admin/auth/login', [
+                $this->view->render('admin/auth/login', [
                     'errors' => $errors,
                     'old'    => ['email' => $email],
                 ])
@@ -65,7 +65,7 @@ class AuthController
             // Deliberate vague message — don't leak whether email exists
             $errors['auth'] = 'These credentials do not match our records.';
             return Response::make()->html(
-                $this->view->renderWithLayout('admin/auth/login', 'admin/auth/login', [
+                $this->view->render('admin/auth/login', [
                     'errors' => $errors,
                     'old'    => ['email' => $email],
                 ])
