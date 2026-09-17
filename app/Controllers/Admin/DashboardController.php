@@ -64,7 +64,7 @@ class DashboardController
             'quotes_expiring_soon' => $this->db->fetchScalar(
                 "SELECT COUNT(*) FROM quotes
                  WHERE status = 'sent'
-                   AND expires_at BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 3 DAY)"
+                   AND valid_until BETWEEN CURDATE() AND DATE_ADD(CURDATE(), INTERVAL 3 DAY)"
             ) ?? 0,
         ];
 
