@@ -282,7 +282,9 @@ function cmd_user_create(Container $c, array $args): void
         abort("A user with that email already exists.");
     }
 
+    $ref = 'USR-' . strtoupper(substr(bin2hex(random_bytes(8)), 0, 10));
     $userId = $db->insert('users', [
+        'public_ref'     => $ref,
         'name'           => $name,
         'email'          => $email,
         'password_hash'  => password_hash($password, PASSWORD_ARGON2ID),
