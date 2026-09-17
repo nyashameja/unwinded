@@ -6,7 +6,7 @@ declare(strict_types=1);
 define('APP_ROOT', dirname(__DIR__));
 define('RUNNING_IN_CONSOLE', true);
 
-require APP_ROOT . '/bootstrap/paths.php';
+$paths = require APP_ROOT . '/bootstrap/paths.php';
 require APP_ROOT . '/vendor/autoload.php';
 
 use Dotenv\Dotenv;
@@ -22,9 +22,10 @@ $dotenv->safeLoad();
 
 // Register services
 $container = Container::getInstance();
+$container->instance('paths', $paths);
 
 $container->singleton(Logger::class, fn() => new Logger(
-    path('logs'),
+    APP_ROOT . '/storage/logs/app.log',
     $_ENV['LOG_LEVEL'] ?? 'debug'
 ));
 
@@ -42,7 +43,7 @@ $container->singleton(Database::class, function () {
 
 $container->singleton(Migrator::class, fn() => new Migrator(
     $container->make(Database::class),
-    path('database') . '/migrations'
+    APP_ROOT . '/database/migrations'
 ));
 
 // ──────────────────────────────────────────────────
