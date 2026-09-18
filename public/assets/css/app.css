@@ -143,6 +143,8 @@ p { color: var(--text-soft); line-height: 1.75; }
 }
 .primary-nav ul li a:hover,
 .primary-nav ul li a.active { color: var(--text); }
+.primary-nav ul li a.btn-primary,
+.primary-nav ul li a.btn--primary { color: #000; }
 
 .nav-cta a.btn { margin-left: .5rem; }
 
@@ -325,6 +327,38 @@ textarea.form-control { resize: vertical; min-height: 120px; }
 .footer-bottom nav { display: flex; gap: 1.25rem; }
 .footer-bottom nav a { font-size: .8rem; color: var(--muted); }
 .footer-bottom nav a:hover { color: var(--accent); }
+
+/* ── Page content / prose ────────────────────────────────────────── */
+.page-content { padding: 3rem 0; }
+.prose { color: var(--text-soft); line-height: 1.75; }
+.prose h1 { color: var(--text); margin-bottom: 1.25rem; }
+.prose h2 {
+  font-size: 1.35rem;
+  color: var(--text);
+  margin: 2.25rem 0 .75rem;
+  padding-bottom: .5rem;
+  border-bottom: 1px solid var(--border);
+}
+.prose h3 { font-size: 1.1rem; color: var(--text); margin: 1.5rem 0 .5rem; }
+.prose p { margin-bottom: 1rem; }
+.prose ul, .prose ol {
+  padding-left: 1.4rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: .4rem;
+}
+.prose li { color: var(--text-soft); }
+.prose strong { color: var(--text); }
+.prose em { color: var(--muted); }
+.prose a { color: var(--accent); }
+.prose a:hover { color: var(--accent-dk); }
+
+/* ── Section heading helpers (used by home.php sections) ─────────── */
+.section__heading { margin-bottom: 1rem; text-align: center; }
+.section__subheading { text-align: center; color: var(--text-soft); margin-bottom: 2rem; }
+.section__cta { text-align: center; margin-top: 2rem; }
+.section--light { background: var(--surface); }
 
 /* ── Visually hidden ─────────────────────────────────────────────── */
 .visually-hidden {

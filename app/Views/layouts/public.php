@@ -106,7 +106,7 @@
             <li><a href="<?= url('/experiences') ?>">All Experiences</a></li>
             <li><a href="<?= url('/packages') ?>">Packages</a></li>
             <li><a href="<?= url('/events') ?>">Public Events</a></li>
-            <li><a href="<?= url('/quote') ?>">Book a Private Event</a></li>
+            <li><a href="<?= url('/request-a-quote') ?>">Book a Private Event</a></li>
           </ul>
         </nav>
 

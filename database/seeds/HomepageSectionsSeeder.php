@@ -85,7 +85,7 @@ class HomepageSectionsSeeder
                     'heading'    => 'Ready to unwind?',
                     'subheading' => 'Book a private event or grab tickets to an upcoming session.',
                     'cta_label'  => 'Get a quote',
-                    'cta_url'    => '/quote',
+                    'cta_url'    => '/request-a-quote',
                 ],
             ],
         ];
