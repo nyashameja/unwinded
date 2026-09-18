@@ -10,15 +10,15 @@
   <?php endforeach; ?>
 <?php endforeach; ?>
 
-<div class="form-grid form-grid--2col" style="gap:2rem;">
+<div class="form-grid form-grid--2col">
 
   <!-- Upcoming schedule -->
   <div>
     <h2>Upcoming Schedule</h2>
 
     <?php if (!empty($upcomingBookings)): ?>
-    <h3 style="font-size:.875rem;color:#666;text-transform:uppercase;letter-spacing:.05em;margin:1rem 0 .5rem;">Private Bookings</h3>
-    <div class="card" style="margin-bottom:1.5rem;">
+    <h3 class="section-label">Private Bookings</h3>
+    <div class="card card--mb">
       <table class="data-table">
         <thead>
           <tr><th>Date</th><th>Ref</th><th>Client</th><th>Staff</th></tr>
@@ -26,10 +26,10 @@
         <tbody>
           <?php foreach ($upcomingBookings as $b): ?>
           <tr>
-            <td style="font-size:.8rem;"><?= e(date('d M Y', strtotime($b['event_date']))) ?></td>
-            <td style="font-size:.8rem;"><?= e($b['public_ref']) ?></td>
+            <td class="td-sm"><?= e(date('d M Y', strtotime($b['event_date']))) ?></td>
+            <td class="td-sm"><?= e($b['public_ref']) ?></td>
             <td><?= e($b['customer_name']) ?></td>
-            <td style="font-size:.8rem;"><?= e($b['staff_names'] ?? '—') ?></td>
+            <td class="td-sm"><?= e($b['staff_names'] ?? '—') ?></td>
           </tr>
           <?php endforeach; ?>
         </tbody>
@@ -38,8 +38,8 @@
     <?php endif; ?>
 
     <?php if (!empty($upcomingEvents)): ?>
-    <h3 style="font-size:.875rem;color:#666;text-transform:uppercase;letter-spacing:.05em;margin:1rem 0 .5rem;">Public Events</h3>
-    <div class="card" style="margin-bottom:1.5rem;">
+    <h3 class="section-label">Public Events</h3>
+    <div class="card card--mb">
       <table class="data-table">
         <thead>
           <tr><th>Date</th><th>Event</th><th>Staff</th></tr>
@@ -47,9 +47,9 @@
         <tbody>
           <?php foreach ($upcomingEvents as $ev): ?>
           <tr>
-            <td style="font-size:.8rem;"><?= e(date('d M Y', strtotime($ev['event_date']))) ?></td>
+            <td class="td-sm"><?= e(date('d M Y', strtotime($ev['event_date']))) ?></td>
             <td><?= e($ev['title']) ?></td>
-            <td style="font-size:.8rem;"><?= e($ev['staff_names'] ?? '—') ?></td>
+            <td class="td-sm"><?= e($ev['staff_names'] ?? '—') ?></td>
           </tr>
           <?php endforeach; ?>
         </tbody>
@@ -62,7 +62,7 @@
     <?php endif; ?>
 
     <!-- Recent assignments -->
-    <h2 style="margin-top:2rem;">All Assignments</h2>
+    <h2 class="section-gap-top">All Assignments</h2>
     <?php if (empty($assignments)): ?>
       <p class="empty-state">No assignments yet.</p>
     <?php else: ?>
@@ -76,12 +76,12 @@
           <tr>
             <td>
               <strong><?= e($a['user_name']) ?></strong>
-              <div style="font-size:.75rem;color:#888;"><?= e($a['user_email']) ?></div>
+              <div class="text-muted-sm"><?= e($a['user_email']) ?></div>
             </td>
             <td><span class="badge badge--neutral"><?= e(str_replace('_',' ', ucfirst($a['assignable_type']))) ?></span></td>
-            <td style="font-size:.8rem;">#<?= (int) $a['assignable_id'] ?></td>
-            <td style="font-size:.8rem;"><?= e(ucfirst($a['role'])) ?></td>
-            <td style="font-size:.8rem;"><?= e(date('d M Y', strtotime($a['assigned_at']))) ?></td>
+            <td class="td-sm">#<?= (int) $a['assignable_id'] ?></td>
+            <td class="td-sm"><?= e(ucfirst($a['role'])) ?></td>
+            <td class="td-sm"><?= e(date('d M Y', strtotime($a['assigned_at']))) ?></td>
             <td>
               <form method="POST" action="<?= url('/admin/staff/' . (int) $a['id'] . '/delete') ?>"
                     onsubmit="return confirm('Remove this assignment?');">
@@ -100,7 +100,7 @@
   <!-- Add assignment form -->
   <div>
     <div class="card">
-      <div class="card__header"><h2 style="margin:0;">Assign Staff</h2></div>
+      <div class="card__header"><h2>Assign Staff</h2></div>
       <div class="card__body">
         <form method="POST" action="<?= url('/admin/staff') ?>">
           <?= csrf_field() ?>

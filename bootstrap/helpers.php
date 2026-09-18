@@ -108,7 +108,7 @@ function redirect(string $url, int $status = 302): never
 function money(int|float $cents, bool $showCents = true): string
 {
     $rand = $cents / 100;
-    return 'R\u{202F}' . number_format($rand, $showCents ? 2 : 0, '.', '\u{202F}');
+    return "R\u{202F}" . number_format($rand, $showCents ? 2 : 0, '.', ' ');
 }
 
 /**

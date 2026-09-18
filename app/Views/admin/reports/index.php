@@ -5,7 +5,7 @@
 </div>
 
 <!-- KPI summary -->
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem;">
+<div class="report-kpi-grid">
   <?php
   $kpis = [
     ['Revenue (30d)',     money($summary['revenue_30d']),       ''],
@@ -17,15 +17,15 @@
   ];
   foreach ($kpis as [$label, $val, $color]):
   ?>
-  <div class="card" style="text-align:center;padding:.75rem;">
-    <div style="font-size:1.5rem;font-weight:700;<?= $color ? 'color:var(--badge-' . $color . '-bg,#333);' : '' ?>"><?= e((string) $val) ?></div>
-    <div style="font-size:.8rem;color:#666;"><?= $label ?></div>
+  <div class="report-kpi-card">
+    <div class="report-kpi-card__value<?= $color ? ' report-kpi-card__value--' . $color : '' ?>"><?= e((string) $val) ?></div>
+    <div class="report-kpi-card__label"><?= e($label) ?></div>
   </div>
   <?php endforeach; ?>
 </div>
 
 <!-- Report cards -->
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;">
+<div class="report-cards-grid">
   <?php
   $reports = [
     ['Revenue',     'revenue',   'Financial summary by month and payment method.',           '💰'],
@@ -38,10 +38,10 @@
   ];
   foreach ($reports as [$title, $slug, $desc, $icon]):
   ?>
-  <a href="<?= url('/admin/reports/' . $slug) ?>" class="card" style="display:block;padding:1.25rem;text-decoration:none;color:inherit;transition:box-shadow .15s;">
-    <div style="font-size:1.5rem;margin-bottom:.5rem;"><?= $icon ?></div>
-    <h3 style="margin:0 0 .25rem;"><?= $title ?></h3>
-    <p style="margin:0;font-size:.875rem;color:#666;"><?= $desc ?></p>
+  <a href="<?= url('/admin/reports/' . $slug) ?>" class="report-card">
+    <div class="report-card__icon"><?= $icon ?></div>
+    <h3 class="report-card__title"><?= e($title) ?></h3>
+    <p class="report-card__desc"><?= e($desc) ?></p>
   </a>
   <?php endforeach; ?>
 </div>

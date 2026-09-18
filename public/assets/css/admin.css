@@ -397,6 +397,160 @@ textarea.form-control { resize: vertical; min-height: 100px; }
 .pagination a:hover { background: var(--surface2); color: var(--text); }
 .pagination .current { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 600; }
 
+/* ── Page header ──────────────────────────────────────────────────── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.page-header__title h1 { font-size: 1.5rem; font-weight: 700; color: var(--text); }
+.page-header__title p { font-size: .875rem; color: var(--muted); margin-top: .25rem; }
+.page-header__actions { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+
+/* ── Dashboard ────────────────────────────────────────────────────── */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.stat-card__link { display: inline-block; font-size: .75rem; color: var(--accent); margin-top: .5rem; }
+.stat-card__link:hover { color: var(--accent-dk); }
+.stat-card__value--alert { color: var(--danger); }
+.dashboard-section { margin-top: 2rem; }
+.dashboard-section h2 { font-size: 1.1rem; font-weight: 600; color: var(--text); margin-bottom: 1rem; }
+
+/* ── Data table (explicit class) ──────────────────────────────────── */
+.data-table { width: 100%; border-collapse: collapse; font-size: .875rem; }
+.data-table th {
+  text-align: left;
+  padding: .625rem .875rem;
+  font-size: .7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: .7rem .875rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  vertical-align: middle;
+}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,.02); }
+
+/* ── Card sub-components ──────────────────────────────────────────── */
+.card__header {
+  padding: .875rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card__header h2, .card__header h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin: 0; }
+.card__body { padding: 1.25rem; }
+
+/* ── Form grid ────────────────────────────────────────────────────── */
+.form-grid { display: grid; gap: 1.5rem; }
+.form-grid--2col { grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+/* ── BEM button aliases ───────────────────────────────────────────── */
+.btn--primary { background: var(--accent); color: #000; border-color: var(--accent); }
+.btn--primary:hover { background: var(--accent-dk); border-color: var(--accent-dk); color: #000; }
+.btn--secondary { background: var(--surface2); color: var(--text); border-color: var(--border); }
+.btn--secondary:hover { background: #2a2a2a; }
+.btn--ghost { background: transparent; color: var(--muted); border-color: var(--border); }
+.btn--ghost:hover { background: var(--surface2); color: var(--text); }
+.btn--danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+.btn--danger:hover { background: #c04040; }
+.btn--warning { background: var(--warning); color: #000; border-color: var(--warning); }
+.btn--xs { padding: .2rem .55rem; font-size: .72rem; }
+.btn--sm { padding: .35rem .75rem; font-size: .8rem; }
+.btn--block { width: 100%; justify-content: center; }
+
+/* ── BEM badge aliases ────────────────────────────────────────────── */
+.badge--neutral { background: rgba(136,136,136,.15); color: var(--muted); }
+.badge--success { background: rgba(76,175,114,.15);  color: #7dd8a0; }
+.badge--warning { background: rgba(224,160,48,.15);  color: #e8c060; }
+.badge--danger  { background: rgba(224,85,85,.15);   color: #f08080; }
+.badge--info    { background: rgba(74,158,221,.15);  color: #80bce8; }
+.badge--accent  { background: rgba(200,169,110,.15); color: var(--accent); }
+
+/* ── Form input BEM variants (dark) ──────────────────────────────── */
+.form-input {
+  width: 100%;
+  padding: .55rem .75rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: .875rem;
+  font-family: inherit;
+  transition: border-color .15s;
+}
+.form-input:focus { outline: none; border-color: var(--accent); }
+.form-input::placeholder { color: #555; }
+.form-input--select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath stroke='%23888' stroke-width='1.5' fill='none' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right .75rem center;
+  padding-right: 2rem;
+}
+.form-input--textarea { resize: vertical; min-height: 100px; }
+.form-input--error { border-color: var(--danger); }
+.required { color: var(--danger); }
+
+/* ── Report page layouts ──────────────────────────────────────────── */
+.report-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.report-kpi-card { text-align: center; padding: .75rem; }
+.report-kpi-card__value { font-size: 1.5rem; font-weight: 700; color: var(--text); }
+.report-kpi-card__value--info    { color: var(--info); }
+.report-kpi-card__value--warning { color: var(--warning); }
+.report-kpi-card__label { font-size: .8rem; color: var(--muted); margin-top: .25rem; }
+.report-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.report-card { display: block; text-decoration: none; color: inherit; transition: border-color .2s; }
+.report-card:hover { border-color: var(--accent); color: inherit; }
+.report-card__icon { font-size: 1.5rem; margin-bottom: .5rem; line-height: 1; }
+.report-card__title { font-size: 1rem; font-weight: 600; color: var(--text); margin: 0 0 .25rem; }
+.report-card__desc { margin: 0; font-size: .875rem; color: var(--muted); }
+
+/* ── Utility helpers ──────────────────────────────────────────────── */
+.empty-state { color: var(--muted); font-size: .875rem; padding: .5rem 0; }
+.text-sm { font-size: .8rem; }
+.text-xs { font-size: .75rem; }
+.section-label {
+  font-size: .75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--muted);
+  margin: 1.25rem 0 .5rem;
+  display: block;
+}
+.table-link { color: var(--accent); font-weight: 500; }
+.table-link:hover { color: var(--accent-dk); }
+.card--mb { margin-bottom: 1.5rem; }
+.td-sm { font-size: .8rem; }
+.text-muted-sm { font-size: .75rem; color: var(--muted); }
+.section-gap-top { margin-top: 2rem; }
+
 /* ── Responsive ───────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .admin-sidebar {
